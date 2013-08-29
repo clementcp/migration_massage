@@ -48,6 +48,7 @@ CSV.foreach(csv_filename, :headers=>true, :header_converters=>:symbol) do |row|
   outfile << "\n"
 
   count += 1
+  next if max.nil? || max==0
   break if count >= max
 end
 
