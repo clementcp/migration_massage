@@ -2,7 +2,11 @@ require 'time'
 
 class String
   def quote
-    "\"#{self}\""
+    "\"#{escaped}\""
+  end
+
+  def escaped
+    self.gsub '"', '\"'
   end
 
   def formatted_time
