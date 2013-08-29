@@ -4,12 +4,7 @@ require 'csv'
 require './case.rb'
 require './user.rb'
 require './message.rb'
-
-class String
-  def quote
-    "\"#{self}\""
-  end
-end
+require './string_extension.rb'
 
 csv_filename = ARGV.shift
 max = ARGV.shift.to_i
