@@ -15,13 +15,9 @@ default_agent.act_as_agent 'General'
 default_agent.save
 
 # Write header file
-out_filename = './tickets.csv'
+out_filename = './Tickets.csv'
 out_csv = CSV.open(out_filename, "wb")
 out_csv << ["Ticket #", "Subject", "Description", "Creation Date [US]", "Closure Date [US]", "Requestor [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags", "Test"]
-
-# CSV.open(out_filename, 'wb') do |csv|
-#   csv << ["Ticket #", "Subject", "Description", "Creation Date [US]", "Closure Date [US]", "Requestor [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags"]
-# end
 
 CSV.foreach(csv_filename, :headers=>true, :header_converters=>:symbol) do |row|
   c = Case.new row[:case_id], row[:subject], row[:description], row[:created_at], row[:resolved_at], row[:type], row[:status], row[:priority], row[:labels]
