@@ -2,13 +2,13 @@ class User
   attr_reader :id, :email, :group_name
   def initialize email
     @email = email
-    @id = self.class.next_id
     @type = 'user'
   end
 
   def save
     if !(self.class.find_by_email @email)
       self.class.save_by_email self
+      @id = self.class.next_id
     end
   end
 
@@ -27,6 +27,15 @@ class User
 
   def self.find_by_email email
     self.storage[email]
+  end
+
+  def self.find_or_create_by_email email
+    existed = self.find_by_email email
+    return existed if existed
+
+    newly_created = self.new email
+    newly_created.save
+    newly_created
   end
 
   def self.save_by_email u
