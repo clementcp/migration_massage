@@ -35,7 +35,7 @@ CSV.foreach(csv_filename, :headers=>true, :header_converters=>:symbol) do |row|
     if c.closed?
       agent = User.default_agent
     else
-      agent = nil
+      agent = User.new nil # nil id, nil email
     end
   end
 
