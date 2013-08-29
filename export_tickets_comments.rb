@@ -6,7 +6,7 @@ require './user.rb'
 require './message.rb'
 require './string_extension.rb'
 
-csv_filenames = ARGV[0..ARGV.count-1]
+csv_filenames = ARGV
 # Check if last argument is a number
 if csv_filenames.last.to_i.to_s==csv_filenames.last
   max = csv_filenames.pop.to_i # per file max
@@ -17,11 +17,6 @@ outfile << (["Ticket #", "Ticket Comment #", "Comment", "Creation Date [US]", "A
 outfile << "\n"
 
 User.load_storage
-
-# Set up default dummy user in case the author is 'customer'
-default_user = User.find_or_create_by_email 'dummy_user@test_for_box.earth'
-default_user.save
-
 csv_filenames.each do |csv_filename|
   puts "Processing #{csv_filename}"
   count = 0 # max is per file
@@ -29,12 +24,13 @@ csv_filenames.each do |csv_filename|
     message = Message.new row[:case_id], row[:message_id], row[:message], row[:creation_date], row[:author], row[:public]
     message.save
 
-    # check to see if author is 'customer'
-    if (row[:author].downcase != "customer") &&
-       (row[:author].downcase != "null")
-      author = User.find_or_create_by_email row[:author]
+    # check to see if author is 'customer' or 'null'
+    if (row[:author].downcase == "customer")
+      author = User.default_user
+    elsif (row[:author].downcase == "null")
+      author = User.default_agent
     else
-      author = default_user
+      author = User.find_or_create_by_email row[:author]
     end
 
     # Write to output csv

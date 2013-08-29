@@ -69,6 +69,17 @@ class User
   def self.next_id
     self.storage.length + 1
   end
+
+  def self.default_agent
+    default_agent = self.find_or_create_by_email 'zoelle@crocodoc.com'
+    default_agent.act_as_agent 'General'
+    default_agent.save
+    default_agent
+  end
+
+  def self.default_user
+    self.find_or_create_by_email 'dummy_user@test_for_box.earth'
+  end
 end
 
 class String
