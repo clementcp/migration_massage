@@ -12,9 +12,6 @@ count = 0
 
 # Set up default support agent in case the agent was 'unassigned'
 User.load_storage
-default_agent = User.find_or_create_by_email 'zoelle@crocodoc.com'
-default_agent.act_as_agent 'General'
-default_agent.save
 
 # Write header file
 outfile = File.open('./Tickets.csv', "wb")
@@ -36,7 +33,7 @@ CSV.foreach(csv_filename, :headers=>true, :header_converters=>:symbol) do |row|
     agent.save
   else
     if c.closed?
-      agent = default_agent
+      agent = User.default_agent
     else
       agent = nil
     end
