@@ -1,7 +1,7 @@
 require 'yaml'
 
 class User
-  attr_reader :id, :email, :group_name, :type
+  attr_reader :id, :email, :group_name
   def initialize email
     @email = email
     @type = 'user'
@@ -14,9 +14,14 @@ class User
     end
   end
 
+  def type
+    return "end user" if @type == "user"
+    @type
+  end
+
   def act_as_agent group_name
     @type = 'agent'
-    @group_name = group_name
+    @group_name = group_name unless group_name.null_group?
   end
 
   def agent?
@@ -63,5 +68,11 @@ class User
 
   def self.next_id
     self.storage.length + 1
+  end
+end
+
+class String
+  def null_group?
+    self.nil? || self.empty? || self.downcase=='null'
   end
 end

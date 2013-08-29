@@ -1,9 +1,10 @@
 require './storage.rb'
 
+
 class Case
   extend Storage
 
-  attr_reader :id, :subject, :created_at, :resolved_at
+  attr_reader :id, :subject
   def initialize id, subject, description, created_at, resolved_at, type, status, priority, labels
     @id = id
     @subject = subject
@@ -27,6 +28,14 @@ class Case
   def description
     return @subject if @description.empty?
     @description
+  end
+
+  def created_at
+    @created_at.formatted_time
+  end
+
+  def resolved_at
+    @resolved_at.formatted_time
   end
 
   def type

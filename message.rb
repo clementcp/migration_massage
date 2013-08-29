@@ -1,10 +1,11 @@
 require './storage.rb'
 require './case.rb'
+require './string_extension.rb'
 
 class Message
   extend Storage
 
-  attr_reader :id, :case_id, :body, :created_at
+  attr_reader :id, :case_id, :body
   def initialize case_id, message_id, message, creation_date, author, is_public
     @case_id = case_id
     @id = message_id
@@ -21,6 +22,10 @@ class Message
   def formatted_public
     return 'TRUE' if public?
     'FALSE'
+  end
+
+  def created_at
+    @created_at.formatted_time
   end
 
   def case
