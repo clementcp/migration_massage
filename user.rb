@@ -1,3 +1,5 @@
+require 'yaml'
+
 class User
   attr_reader :id, :email, :group_name
   def initialize email
@@ -7,8 +9,8 @@ class User
 
   def save
     if !(self.class.find_by_email @email)
-      self.class.save_by_email self
       @id = self.class.next_id
+      self.class.save_by_email self
     end
   end
 
@@ -29,6 +31,19 @@ class User
     @@storage ||= Hash.new
   end
 
+  def self.load_storage yaml='./user.yaml'
+    user_file = File.open(yaml, 'r')
+    @@storage = YAML.load user_file
+  rescue
+    # Ignore any exception which is likely to be non existed file
+  end
+
+  def self.dump_storage yaml='./user.yaml'
+    serialized = YAML.dump User.storage
+    user_file = File.open(yaml, 'wb')
+    user_file.write(serialized)
+  end
+
   def self.find_by_email email
     self.storage[email]
   end
@@ -47,7 +62,6 @@ class User
   end
 
   def self.next_id
-    @@id ||= 0
-    @@id += 1
+    self.storage.length + 1
   end
 end

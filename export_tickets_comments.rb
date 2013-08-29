@@ -15,15 +15,11 @@ csv_filename = ARGV.shift
 max = ARGV.shift.to_i
 count = 0
 
-# Write header file
-out_filename = './Tickets Comments.csv'
-# out_csv = CSV.open(out_filename, "wb")
-# out_csv << ["Ticket #", "Ticket Comment #", "Comment", "Creation Date [US]", "Author [id]", "Public"]
-
-outfile = File.open(out_filename, "wb")
+outfile = File.open('./Tickets Comments.csv', "wb")
 outfile << (["Ticket #", "Ticket Comment #", "Comment", "Creation Date [US]", "Author [id]", "Public"].join(', '))
 outfile << "\n"
 
+User.load_storage
 CSV.foreach(csv_filename, :headers=>true, :header_converters=>:symbol) do |row|
   message = Message.new row[:case_id], row[:message_id], row[:message], row[:creation_date], row[:author], row[:public]
   message.save
@@ -41,5 +37,6 @@ CSV.foreach(csv_filename, :headers=>true, :header_converters=>:symbol) do |row|
   break if count >= max
 end
 
+User.dump_storage
 outfile.close
 
