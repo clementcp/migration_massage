@@ -55,6 +55,8 @@ class Case
     # space => underscore, semicolon => space
     out = @labels.gsub " ", "_"
     out = out.gsub ";", " "
+    # adding "type" as tag
+    out << " #{@type.downcase}"
     out
   end
 end
