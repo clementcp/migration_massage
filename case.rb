@@ -53,8 +53,8 @@ class Case
 
   def tags
     # space => underscore, semicolon => space
-    out = @labels.sub " ", "_"
-    out = out.sub ";", " "
+    out = @labels.gsub " ", "_"
+    out = out.gsub ";", " "
     out
   end
 end
