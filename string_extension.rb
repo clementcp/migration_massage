@@ -6,7 +6,7 @@ class String
   end
 
   def formatted_time
-    return Time.parse(self).strftime("%m/%d/%Y %T") if self != 'null'
-    ''
+    return '' if self.downcase=='null'
+    Time.parse(self).strftime("%m/%d/%Y %T")
   end
 end
