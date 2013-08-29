@@ -1,7 +1,7 @@
 require 'yaml'
 
 class User
-  attr_reader :id, :email, :group_name
+  attr_reader :id, :email, :group_name, :type
   def initialize email
     @email = email
     @type = 'user'
