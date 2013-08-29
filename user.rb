@@ -21,6 +21,10 @@ class User
     @type == 'agent'
   end
 
+  def twitter?
+    @email[0]=='@'
+  end
+
   def self.storage
     @@storage ||= Hash.new
   end
