@@ -22,13 +22,10 @@ CSV.foreach(csv_filename, :headers=>true, :header_converters=>:symbol) do |row|
   c = Case.new row[:case_id], row[:subject], row[:description], row[:created_at], row[:resolved_at], row[:type], row[:status], row[:priority], row[:labels]
   c.save
 
-  user = User.find_or_create_by_email row[:requestor]
-
-  # Skip if Twitter user
-  #next if user.twitter?
+  user = User.find_or_create_by_key row[:requestor]
 
   if row[:agent].downcase!="unassigned"
-    agent = User.find_or_create_by_email row[:agent]
+    agent = User.find_or_create_by_key row[:agent]
     agent.act_as_agent row[:group_name]
     agent.save
   else

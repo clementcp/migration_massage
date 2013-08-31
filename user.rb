@@ -1,23 +1,25 @@
 require 'yaml'
 
 class User
-  attr_reader :id, :group_name, :type
-  def initialize email
-    @email = email
+  attr_reader :id, :group_name, :type, :key, :twitter, :email
+  def initialize key
+    @key = key
     @type = 'end user'
-  end
 
-  def save
-    if !(self.class.find_by_email @email)
-      @id = self.class.next_id
-      self.class.save_by_email self
+    if twitter?
+      @twitter = key
+      @email = @twitter[1..-1]+"@generic_twitter_user.com"
+    else
+      @email = key
     end
   end
 
-  # def type
-  #   return "end user" if @type == "user"
-  #   @type
-  # end
+  def save
+    if !(self.class.find_by_key @key)
+      @id = self.class.next_id
+      self.class.save_by_key self
+    end
+  end
 
   def act_as_agent group_name
     @type = 'agent'
@@ -28,18 +30,10 @@ class User
     @type == 'agent'
   end
 
-  # def twitter?
-  #   @email[0]=='@'
-  # end
-
-# defining email for twitter users if necessary
-  def email
-    if @email[0]=='@'
-      @email = @email[1..-1]+"@generic_twitter_user.com"
-    end
-    @email
+  def twitter?
+    # Save guard for @key being nil
+    @key && @key[0]=='@'
   end
-# end of messing with twitter users
 
   def self.storage
     @@storage ||= Hash.new
@@ -58,21 +52,21 @@ class User
     user_file.write(serialized)
   end
 
-  def self.find_by_email email
-    self.storage[email]
+  def self.find_by_key key
+    self.storage[key]
   end
 
-  def self.find_or_create_by_email email
-    existed = self.find_by_email email
+  def self.find_or_create_by_key key
+    existed = self.find_by_key key
     return existed if existed
 
-    newly_created = self.new email
+    newly_created = self.new key
     newly_created.save
     newly_created
   end
 
-  def self.save_by_email u
-    self.storage[u.email] = u
+  def self.save_by_key u
+    self.storage[u.key] = u
   end
 
   def self.next_id
@@ -80,14 +74,14 @@ class User
   end
 
   def self.default_agent
-    default_agent = self.find_or_create_by_email 'zoelle@crocodoc.com'
+    default_agent = self.find_or_create_by_key 'zoelle@crocodoc.com'
     default_agent.act_as_agent 'General'
     default_agent.save
     default_agent
   end
 
   def self.default_user
-    self.find_or_create_by_email 'generic_zendesk_user@test_for_box.com'
+    self.find_or_create_by_key 'generic_zendesk_user@test_for_box.com'
   end
 end
 

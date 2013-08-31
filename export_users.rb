@@ -8,13 +8,13 @@ outfile << "\n"
 
 User.load_storage
 
-User.storage.each_pair do |email, user|
+User.storage.each_pair do |key, user|
   # Write to output csv
   # Skip if Twitter user
   # next if user.twitter?
 
   quoted = Array.new
-  [user.id, user.email, user.email, '', '', user.type, '', '', '', ''].each do |element|
+  [user.id, user.key, user.email, '', '', user.type, '', '', '', ''].each do |element|
     quoted << element.to_s.quote
   end
   outfile << quoted.join(',')

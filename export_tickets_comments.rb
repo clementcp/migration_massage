@@ -30,7 +30,7 @@ csv_filenames.each do |csv_filename|
     elsif (row[:author].downcase == "null")
       author = User.default_agent
     else
-      author = User.find_or_create_by_email row[:author]
+      author = User.find_or_create_by_key row[:author]
     end
 
     # Write to output csv
