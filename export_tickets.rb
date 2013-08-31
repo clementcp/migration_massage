@@ -25,7 +25,7 @@ CSV.foreach(csv_filename, :headers=>true, :header_converters=>:symbol) do |row|
   user = User.find_or_create_by_email row[:requestor]
 
   # Skip if Twitter user
-  next if user.twitter?
+  #next if user.twitter?
 
   if row[:agent].downcase!="unassigned"
     agent = User.find_or_create_by_email row[:agent]

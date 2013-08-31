@@ -1,10 +1,10 @@
 require 'yaml'
 
 class User
-  attr_reader :id, :group_name
+  attr_reader :id, :group_name, :type
   def initialize email
     @email = email
-    @type = 'user'
+    @type = 'end user'
   end
 
   def save
@@ -14,10 +14,10 @@ class User
     end
   end
 
-  def type
-    return "end user" if @type == "user"
-    @type
-  end
+  # def type
+  #   return "end user" if @type == "user"
+  #   @type
+  # end
 
   def act_as_agent group_name
     @type = 'agent'
@@ -28,9 +28,9 @@ class User
     @type == 'agent'
   end
 
-  def twitter?
-    @email[0]=='@'
-  end
+  # def twitter?
+  #   @email[0]=='@'
+  # end
 
 # defining email for twitter users if necessary
   def email

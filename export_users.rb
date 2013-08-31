@@ -11,7 +11,7 @@ User.load_storage
 User.storage.each_pair do |email, user|
   # Write to output csv
   # Skip if Twitter user
-  next if user.twitter?
+  # next if user.twitter?
 
   quoted = Array.new
   [user.id, user.email, user.email, '', '', user.type, '', '', '', ''].each do |element|
