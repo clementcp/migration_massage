@@ -1,7 +1,7 @@
 require 'yaml'
 
 class User
-  attr_reader :id, :email, :group_name
+  attr_reader :id, :group_name
   def initialize email
     @email = email
     @type = 'user'
@@ -31,6 +31,15 @@ class User
   def twitter?
     @email[0]=='@'
   end
+
+# defining email for twitter users if necessary
+  def email
+    if @email[0]=='@'
+      @email = @email[1..-1]+"@generic_twitter_user.com"
+    end
+    @email
+  end
+# end of messing with twitter users
 
   def self.storage
     @@storage ||= Hash.new
@@ -78,7 +87,7 @@ class User
   end
 
   def self.default_user
-    self.find_or_create_by_email 'dummy_user@test_for_box.earth'
+    self.find_or_create_by_email 'generic_zendesk_user@test_for_box.com'
   end
 end
 
