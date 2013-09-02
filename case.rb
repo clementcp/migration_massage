@@ -35,7 +35,10 @@ class Case
   end
 
   def resolved_at
-    @resolved_at.formatted_time
+    if (@status.downcase=='closed' || @status.downcase=='resolved')
+      return @resolved_at.formatted_time
+    end
+    ""
   end
 
   def type
