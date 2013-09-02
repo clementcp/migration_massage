@@ -8,7 +8,7 @@ class User
 
     if twitter?
       @twitter = key
-      @email = @twitter[1..-1]+"@generic_twitter_user.com"
+      @email = @twitter[1..-1]+"@generic-twitter-user.com"
     else
       @email = key
     end
@@ -81,7 +81,7 @@ class User
   end
 
   def self.default_user
-    self.find_or_create_by_key 'generic_zendesk_user@test_for_box.com'
+    self.find_or_create_by_key 'generic-zendesk-user@test-for-box.com'
   end
 end
 
