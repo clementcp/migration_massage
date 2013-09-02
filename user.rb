@@ -5,6 +5,7 @@ class User
   def initialize key
     @key = key
     @type = 'end user'
+    @group_name = 'General'
 
     if twitter?
       @twitter = key
