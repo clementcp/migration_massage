@@ -3,7 +3,7 @@ require './user.rb'
 require './string_extension.rb'
 
 outfile = File.open('./Groups.csv', "wb")
-outfile << (["Name", "Agent"].join(', '))
+outfile << (["Name", "Agent"].join(','))
 outfile << "\n"
 
 User.load_storage

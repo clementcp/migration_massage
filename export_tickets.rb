@@ -15,7 +15,7 @@ User.load_storage
 
 # Write header file
 outfile = File.open('./Tickets.csv', "wb")
-outfile << (["Ticket #", "Subject", "Description", "Creation Date [US]", "Closure Date [US]", "Requestor [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags", "Test"]).join(',')
+outfile << (["Ticket #", "Subject", "Description", "Creation Date [US]", "Closure Date [US]", "Requestor [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags"]).join(',')
 outfile << "\n"
 
 CSV.foreach(csv_filename, :headers=>true, :header_converters=>:symbol) do |row|

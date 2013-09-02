@@ -39,7 +39,7 @@ class Case
   end
 
   def type
-    ""
+    "Problem"
   end
 
   def status
