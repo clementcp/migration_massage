@@ -12,7 +12,7 @@ if csv_filenames.last.to_i.to_s==csv_filenames.last
   max = csv_filenames.pop.to_i # per file max
 end
 
-outfile = File.open('./Tickets Comments.csv', "wb")
+outfile = File.open('./Ticket Comments.csv', "wb")
 outfile << (["Ticket #", "Ticket Comment #", "Comment", "Creation Date [US]", "Author [id]", "Public"].join(', '))
 outfile << "\n"
 
