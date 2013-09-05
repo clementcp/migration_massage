@@ -13,7 +13,7 @@ if csv_filenames.last.to_i.to_s==csv_filenames.last
 end
 
 outfile = File.open('./Ticket Comments.csv', "wb")
-outfile << (["Ticket #", "Ticket Comment #", "Comment", "Creation Date [US]", "Author [id]", "Public"].join(', '))
+outfile << (["Ticket #", "Ticket Comment #", "Comment", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Author [id]", "Public"].join(', '))
 outfile << "\n"
 
 User.load_storage
