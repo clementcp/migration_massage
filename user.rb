@@ -1,11 +1,11 @@
 require 'yaml'
 
 class User
-  attr_reader :id, :group_name, :type, :key, :twitter, :email
+  attr_reader :id, :group_name, :type, :key, :twitter, :email, :name, :organization
+  attr_writer :type, :email, :name, :organization
   def initialize key
     @key = key
     @type = 'end user'
-    @group_name = 'General'
 
     if twitter?
       @twitter = key
@@ -18,8 +18,8 @@ class User
   def save
     if !(self.class.find_by_key @key)
       @id = self.class.next_id
-      self.class.save_by_key self
     end
+    self.class.save_by_key self
   end
 
   def act_as_agent group_name
