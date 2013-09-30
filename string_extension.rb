@@ -16,8 +16,7 @@ class String
   end
 
   def formatted_email
-    self.gsub /\{(.*?)\}/, ""
-    self.gsub "SMTP:", ""
-    return self
+    self.gsub! /\{(.*?)\}/, ""
+    self.gsub! "SMTP:", ""
   end
 end

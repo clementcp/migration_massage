@@ -36,28 +36,41 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
   #   end
   # end
 
-  user_email = row["Client Email"]
-  user_email.formatted_email
+  # add requester info into database if necessary (always overwrite with user email)
+  requester_email = row["Client Email"]
+  requester = User.find_or_create_by_key row["Client ID"]
+  requester.email = requester_email.formatted_email
 
-  user = User.find_or_create_by_key user_email
+  # check to see if assignee is actually listed
+  if row["Assigned To"].downcase!=""
+    # check to see if assignee exist before adding it
+    assignee = User.find_by_key row["Assigned To"]
+    if assignee.nil?
+      # assignee doesn't currently exist in database
+      # add to database with a dummy email
+      assignee = User.find_or_create_by_key row["Assigned To"]
+      assignee.email = "unknown_assignee_"+row["Last Name Assigned To"]+"@muscogee.k12.ga.us"
 
-  if row["Last Name Assigned To"].downcase!=""
-    agent_email =
-    agent = User.find_or_create_by_key row[:agent]
-    agent.act_as_agent c.group
-    agent.save
-  else
-    if c.closed?
-      agent = User.default_agent
+      assignee.act_as_agent c.group
     else
-      agent = User.new nil # nil id, nil email
+      # assignee already exist in database
+      # add group name if necessary
+      assignee.act_as_agent c.group
+    end
+  else
+    # assignee not listed
+    # use default agent if ticket is closed
+    if c.closed?
+      assignee = User.default_agent
+    else
+      # ok to keep assigne blank if ticket is not closed
+      assignee = User.new nil # nil id, nil email
     end
   end
 
-
   # Write to output csv
   quoted = Array.new
-  [c.id, c.subject, c.description, c.created_at, c.resolved_at, user.id, agent.group, agent.id, c.type, c.status, c.priority, c.tags, c.room_number, c.v_serial_number].each do |element|
+  [c.id, c.subject, c.description, c.created_at, c.resolved_at, requester.id, c.group, assignee.id, c.type, c.status, c.priority, c.tags, c.room_number, c.v_serial_number].each do |element|
     quoted << element.to_s.quote
   end
   outfile << quoted.join(',')

@@ -1,11 +1,12 @@
 require 'yaml'
 
 class User
-  attr_reader :id, :group_name, :type, :key, :twitter, :email, :name, :organization
+  attr_reader :id, :groups_name, :type, :key, :twitter, :email, :name, :organization
   attr_writer :type, :email, :name, :organization
   def initialize key
     @key = key
     @type = 'end user'
+    @groups_name = Array.new
 
     if twitter?
       @twitter = key
@@ -24,7 +25,7 @@ class User
 
   def act_as_agent group_name
     @type = 'agent'
-    @group_name = group_name unless group_name.null_group?
+    @groups_name.push(group_name) if !@groups_name.index(group_name)
   end
 
   def agent?
@@ -75,7 +76,7 @@ class User
   end
 
   def self.default_agent
-    default_agent = self.find_or_create_by_key 'zoelle@crocodoc.com'
+    default_agent = self.find_or_create_by_key 'default_agent@email.com'
     default_agent.act_as_agent 'General'
     default_agent.save
     default_agent

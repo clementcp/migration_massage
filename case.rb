@@ -117,6 +117,7 @@ class Case
       when "DIS PORTAL AND WEB"
         return "SharePoint/Web Group"
       else
+        puts "no mapping for "+ @group
         return @group
       end
   end
