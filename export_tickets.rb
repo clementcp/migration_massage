@@ -19,7 +19,7 @@ outfile << (["Ticket #", "Subject", "Description", "Creation Date [yyyy-MM-dd HH
 outfile << "\n"
 
 CSV.foreach(csv_filename, :headers=>true) do |row|
-  c = Case.new row["Incident #"], row["Room Number"], row ["Serial Number"], row["Client ID"], row["Client Email"], row["Location ID"], row["Incident Description"], row["Incident Resolution"], row["Category ID"], row["Open Date"], row["Close Date & Time"], row["Assigned To"], row["Last Name Assigned To"], row["Group"], row["State"]
+  c = Case.new row["Incident #"], row["Room Number"], row ["Serial Number"], row["Client ID"], row["Client Email"], row["Location ID"], row["Incident Description"], row["Incident Resolution"], row["Category ID"], row["Open Date"], row["Close Date & Time"], row["Assigned To"], row["Last Name Assigned To"], row["Group"], row["State:"]
   c.save
 
   # user = User.find_or_create_by_key row[:requestor]
@@ -67,6 +67,8 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
       assignee = User.new nil # nil id, nil email
     end
   end
+
+  puts c.inspect
 
   # Write to output csv
   quoted = Array.new

@@ -1,4 +1,5 @@
 require 'yaml'
+require 'set'
 
 class User
   attr_reader :id, :groups_name, :type, :key, :twitter, :email, :name, :organization
@@ -6,7 +7,7 @@ class User
   def initialize key
     @key = key
     @type = 'end user'
-    @groups_name = Array.new
+    @groups_name = Set.new
 
     if twitter?
       @twitter = key
@@ -25,7 +26,7 @@ class User
 
   def act_as_agent group_name
     @type = 'agent'
-    @groups_name.push(group_name) if !@groups_name.index(group_name)
+    @groups_name << group_name
   end
 
   def agent?

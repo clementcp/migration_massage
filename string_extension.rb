@@ -12,7 +12,9 @@ class String
   def formatted_time
     return '' if self.downcase=='null'
     # Time.parse(self).strftime("%m/%d/%Y %T")
-    Time.parse(self).strftime("%Y-%m-%d %T GMT-08:00")
+    # Time.parse(self).strftime("%Y-%m-%d %T GMT-08:00")
+    # for muscogee
+    Time.strptime(self,"%m/%d/%Y %H:%M:%S %p").strftime("%Y-%m-%d %T GMT-08:00")
   end
 
   def formatted_email

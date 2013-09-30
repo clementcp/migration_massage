@@ -17,7 +17,7 @@ class Case
   #   @labels = labels
   # end
 
-  attr_reader :id, :description
+  attr_reader :id, :description, :room_number
   def initialize id, room_number, serial_number, client_id, client_email, location_id, description, resolution, category_id, open_date, close_date, assigned_to, last_name_assigned_to, group, state
     @id = id
     @room_number = room_number
@@ -48,13 +48,12 @@ class Case
     return "Legacy ticket - " + @category_id
   end
 
-
   def created_at
     @open_date.formatted_time
   end
 
   def resolved_at
-    if @state.downcase=="c"
+    if self.closed?
       return @close_date.formatted_time
     end
     ""
@@ -65,7 +64,7 @@ class Case
   end
 
   def status
-    return "Closed" if @state=="C"
+    return "Closed" if self.closed?
     "Open"
   end
 
@@ -74,27 +73,36 @@ class Case
   end
 
   def tags
-    # space => underscore, semicolon => space
-    out = @labels.gsub " ", "_"
-    out = out.gsub ";", " "
-    # adding "type" as tag
-    out << " #{@type.downcase}"
-    out
+    # # space => underscore, semicolon => space
+    # out = @labels.gsub " ", "_"
+    # out = out.gsub ";", " "
+    # # adding "type" as tag
+    # out << " #{@type.downcase}"
+    # out
   end
 
   def v_serial_number
-    return @serial_number if (@serial_number && @serial_number[0].downcase=="v")
-    ""
+    if @serial_number[0].nil?
+      return ""
+    else
+      return @serial_number if (!!@serial_number && @serial_number[0].downcase=="v")
+    end
   end
 
   def r_serial_number
-    return @serial_number if (@serial_number && @serial_number[0].downcase=="r")
-    ""
+    if @serial_number[0].nil?
+      return ""
+    else
+      return @serial_number if (!!@serial_number && @serial_number[0].downcase=="r")
+    end
   end
 
   def sb_serial_number
-    return @serial_number if (@serial_number && @serial_number[0..1].downcase=="sb")
-    ""
+    if @serial_number[0].nil?
+      return ""
+    else
+      return @serial_number if (!!@serial_number && @serial_number[0..1].downcase=="sb")
+    end
   end
 
   def group
@@ -117,7 +125,7 @@ class Case
       when "DIS PORTAL AND WEB"
         return "SharePoint/Web Group"
       else
-        puts "no mapping for "+ @group
+        # puts "DEBUG -- no mapping for "+ @group
         return @group
       end
   end
