@@ -77,14 +77,14 @@ class User
   end
 
   def self.default_agent
-    default_agent = self.find_or_create_by_key 'default_agent@email.com'
+    default_agent = self.find_or_create_by_key 'defaultagent@test-for-moscogee.com'
     default_agent.act_as_agent 'General'
     default_agent.save
     default_agent
   end
 
   def self.default_user
-    self.find_or_create_by_key 'generic-zendesk-user@test-for-box.com'
+    self.find_or_create_by_key 'defaultenduser@test-for-muscogee.com'
   end
 end
 

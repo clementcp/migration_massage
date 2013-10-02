@@ -17,7 +17,7 @@ class Case
   #   @labels = labels
   # end
 
-  attr_reader :id, :description, :room_number
+  attr_reader :id, :description, :room_number, :resolution
   def initialize id, room_number, serial_number, client_id, client_email, location_id, description, resolution, category_id, open_date, close_date, assigned_to, last_name_assigned_to, group, state
     @id = id
     @room_number = room_number
@@ -106,24 +106,43 @@ class Case
   end
 
   def group
-    # DIS APPLICATION SUPPORT -->     SIS Group
-    # DIS ERP CRC -->       Business Apps Group
-    # DIS ERP MCPEC -->     ERP Group
-    # DIS EXCEPTIONAL STUDENTS -->    SIS Group
-    # DIS INSTRUCTIONAL TECHNOLOGY -->  ITS Group
-    # DIS MAINFRAME -->     Business Apps Group
-    # DIS PORTAL AND WEB -->      SharePoint\Web Group
+    # DIS APPLICATION SUPPORT         SIS
+    # DIS CUSTOMER SUPPORT            Customer Support Center
+    # DIS DATA CENTER                 Data Center
+    # DIS ERP CRC                     Business Apps
+    # DIS ERP MCPEC                   ERP
+    # DIS EXCEPTIONAL STUDENTS        SIS
+    # DIS FISCAL SERVICES             Fiscal Services
+    # DIS INSTRUCTIONAL TECHNOLOGY    ITS
+    # DIS MAINFRAME                   Business Apps
+    # DIS MANAGEMENT                  Customer Support Center
+    # DIS PORTAL AND WEB              SharePoint/Web Group
+    # DIS SCHOOL NUTRITION            TBD
+    # DIS TECHNICAL SUPPORT           Technical Support
+    # PS DISPATCH
+    # PS ZONE EROSION CONTROL
+    # SYSTEM ADMINSTRATION            Customer Support Center
     case @group
       when "DIS APPLICATION SUPPORT", "DIS EXCEPTIONAL STUDENTS"
-        return "SIS Group"
+        return "SIS"
+      when "DIS CUSTOMER SUPPORT", "DIS MANAGEMENT", "SYSTEM ADMINISTRATION"
+        return "Customer Support Center"
+      when "DIS DATA CENTER"
+        return "Data Center"
       when "DIS ERP CRC", "DIS MAINFRAME"
-        return "Business Apps Group"
+        return "Business Apps"
       when "DIS ERP MCPEC"
-        return "ERP Group"
+        return "ERP"
+      when "DIS FISCAL SERVICES"
+        return "Fiscal Services"
       when "DIS INSTRUCTIONAL TECHNOLOGY"
-        return "ITS Group"
+        return "ITS"
       when "DIS PORTAL AND WEB"
         return "SharePoint/Web Group"
+      when "DIS SCHOOL NUTRITION"
+        return "TBD"
+      when "DIS TECHNICAL SUPPORT"
+        return "Technical Support"
       else
         # puts "DEBUG -- no mapping for "+ @group
         return @group

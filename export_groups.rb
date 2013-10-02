@@ -16,9 +16,7 @@ User.storage.each_pair do |email, user|
 
   quoted = Array.new
   # [user.group_name, user.email].each do |element|
-
   # take care of multiple groups
-
     quoted << element.to_s.quote
   end
   outfile << quoted.join(',')
