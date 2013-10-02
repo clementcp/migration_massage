@@ -8,6 +8,7 @@ class User
     @key = key
     @type = 'end user'
     @groups_name = Set.new
+    @name = @email
 
     if twitter?
       @twitter = key
@@ -77,14 +78,20 @@ class User
   end
 
   def self.default_agent
-    default_agent = self.find_or_create_by_key 'defaultagent@test-for-moscogee.com'
+    default_agent = self.find_or_create_by_key 'Zendesk_default_agent'
     default_agent.act_as_agent 'General'
+    default_agent.name = "Default Agent"
+    default_agent.email = "defaultagent@test-for-moscogee.com"
     default_agent.save
     default_agent
   end
 
   def self.default_user
-    self.find_or_create_by_key 'defaultenduser@test-for-muscogee.com'
+    default_user = self.find_or_create_by_key "Zendesk_default_enduser"
+    default_user.name = "Default User"
+    default_user.email  = "defaultenduser@test-for-muscogee.com"
+    default_user.save
+    default_user
   end
 end
 

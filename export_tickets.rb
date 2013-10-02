@@ -44,6 +44,7 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
   requester_email = row["Client Email"]
   requester = User.find_or_create_by_key row["Client ID"]
   requester.email = requester_email.formatted_email
+  requester.name = requester.email if requester.name.nil?
 
   # check to see if assignee is actually listed
   if row["Assigned To"].downcase!=""
@@ -54,6 +55,7 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
       # add to database with a dummy email
       assignee = User.find_or_create_by_key row["Assigned To"]
       assignee.email = "unknown_assignee_"+row["Last Name Assigned To"]+"@muscogee.k12.ga.us"
+      assignee.name = assignee.email if assignee.name.nil?
 
       assignee.act_as_agent c.group
     else
