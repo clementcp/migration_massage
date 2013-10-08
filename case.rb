@@ -17,7 +17,7 @@ class Case
   #   @labels = labels
   # end
 
-  attr_reader :id, :description, :room_number, :resolution
+  attr_reader :id, :room_number, :resolution
   def initialize id, room_number, serial_number, client_id, client_email, location_id, description, resolution, category_id, open_date, close_date, assigned_to, last_name_assigned_to, group, state
     @id = id
     @room_number = room_number
@@ -48,8 +48,20 @@ class Case
     return "Legacy ticket - " + @category_id
   end
 
+  def description
+    return @category_id if @description.empty?
+    @description
+  end
+
   def created_at
     @open_date.formatted_time
+  end
+
+  def comment_created_at
+    if @close_date.empty?
+      return @open_date.formatted_time
+    end
+    @close_date.formatted_time
   end
 
   def resolved_at

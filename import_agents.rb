@@ -15,7 +15,7 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
   a.type = "agent"
   a.name = row["Name"]
   a.email = row["Email"]
-  a.organization = row["Organzation"]
+  a.organization = row["Organization"]
   a.save
  # puts a.id, a.name
 end

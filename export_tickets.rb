@@ -42,9 +42,14 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
 
   # add requester info into database if necessary (always overwrite with user email)
   requester_email = row["Client Email"]
-  requester = User.find_or_create_by_key row["Client ID"]
-  requester.email = requester_email.formatted_email
-  requester.name = requester.email if requester.name.nil?
+  if requester_email.empty?
+    requester = User.default_user
+  else
+    requester = User.find_or_create_by_key row["Client ID"]
+    requester.email = requester_email.formatted_email
+    requester.name = requester.email.formatted_name if requester.name.nil?
+    requester.organization = row["Location ID"]
+  end
 
   # check to see if assignee is actually listed
   if row["Assigned To"].downcase!=""
@@ -55,8 +60,8 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
       # add to database with a dummy email
       assignee = User.find_or_create_by_key row["Assigned To"]
       assignee.email = "unknown_assignee_"+row["Last Name Assigned To"]+"@muscogee.k12.ga.us"
-      assignee.name = assignee.email if assignee.name.nil?
-
+      assignee.name = assignee.email.formatted_name if assignee.name.nil?
+      assignee.organization = row["Location ID"]
       assignee.act_as_agent c.group
     else
       # assignee already exist in database
@@ -80,7 +85,7 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
     next
   end
 
-  puts c.inspect
+  # puts c.inspect
 
   # Write to output csv
   quoted = Array.new
@@ -93,7 +98,7 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
   # write outout for "ticket comments" only if resolution is not empty
   if (c.resolution != "")
     quoted2 = Array.new
-    [c.id, count+1, c.resolution, c.resolved_at, assignee.id, "TRUE"].each do |element|
+    [c.id, count+1, c.resolution, c.comment_created_at, assignee.id, "TRUE"].each do |element|
       quoted2 << element.to_s.quote
     end
     outfile2 << quoted2.join(',')
