@@ -105,7 +105,7 @@ class Case
     if @serial_number[0].nil?
       return ""
     else
-      return @serial_number if (!!@serial_number && @serial_number[0].downcase=="r")
+      return @serial_number if (!!@serial_number && @serial_number[0].downcase=="m")
     end
   end
 
