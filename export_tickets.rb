@@ -42,7 +42,7 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
 
   # add requester info into database if necessary (always overwrite with user email)
   requester_email = row["Client Email"]
-  if requester_email.empty?
+  if requester_email.nil?
     requester = User.default_user
   else
     requester = User.find_or_create_by_key row["Client ID"]
@@ -52,7 +52,8 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
   end
 
   # check to see if assignee is actually listed
-  if row["Assigned To"].downcase!=""
+  # if row["Assigned To"].downcase!=""
+  if !row["Assigned To"].nil?
     # check to see if assignee exist before adding it
     assignee = User.find_by_key row["Assigned To"]
     if assignee.nil?

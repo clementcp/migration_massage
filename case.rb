@@ -49,7 +49,7 @@ class Case
   end
 
   def description
-    return @category_id if @description.empty?
+    return @category_id if @description.nil?
     @description
   end
 
@@ -58,7 +58,8 @@ class Case
   end
 
   def comment_created_at
-    if @close_date.empty?
+    # if @close_date.empty?
+    if @close_date.nil?
       return @open_date.formatted_time
     end
     @close_date.formatted_time
@@ -94,26 +95,38 @@ class Case
   end
 
   def v_serial_number
-    if @serial_number[0].nil?
+    if @serial_number.nil?
       return ""
     else
-      return @serial_number if (!!@serial_number && @serial_number[0].downcase=="v")
+      if @serial_number[0].nil?
+        return ""
+      else
+        return @serial_number if (!!@serial_number && @serial_number[0].downcase=="v")
+      end
     end
   end
 
   def r_serial_number
-    if @serial_number[0].nil?
+    if @serial_number.nil?
       return ""
     else
-      return @serial_number if (!!@serial_number && @serial_number[0].downcase=="m")
+      if @serial_number[0].nil?
+        return ""
+      else
+        return @serial_number if (!!@serial_number && @serial_number[0].downcase=="m")
+      end
     end
   end
 
   def sb_serial_number
-    if @serial_number[0].nil?
+    if @serial_number.nil?
       return ""
     else
-      return @serial_number if (!!@serial_number && @serial_number[0..1].downcase=="sb")
+      if @serial_number[0].nil?
+        return ""
+      else
+        return @serial_number if (!!@serial_number && @serial_number[0..1].downcase=="sb")
+      end
     end
   end
 
