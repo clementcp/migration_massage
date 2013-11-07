@@ -97,7 +97,7 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
   outfile << "\n"
 
   # write outout for "ticket comments" only if resolution is not empty
-  if (c.resolution != "")
+  if !c.resolution.nil?
     quoted2 = Array.new
     [c.id, count+1, c.resolution, c.comment_created_at, assignee.id, "TRUE"].each do |element|
       quoted2 << element.to_s.quote
