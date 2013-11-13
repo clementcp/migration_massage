@@ -67,7 +67,11 @@ class Case
 
   def resolved_at
     if self.closed?
-      return @close_date.formatted_time
+      if !@close_date.nil?
+        return @close_date.formatted_time
+      else
+        return @open_date.formatted_time
+      end
     end
     ""
   end
