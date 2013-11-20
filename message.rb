@@ -5,7 +5,7 @@ require './string_extension.rb'
 class Message
   extend Storage
 
-  attr_reader :id, :case_id, :body
+  attr_reader :id, :case_id, :body, :author
   def initialize case_id, message_id, message, creation_date, author, is_public
     @case_id = case_id
     @id = message_id
@@ -16,7 +16,9 @@ class Message
   end
 
   def public?
-    @is_public.downcase == 'y'
+    # @is_public.downcase == 'y'
+    return false if @is_public.downcase == 'false'
+    true
   end
 
   def formatted_public

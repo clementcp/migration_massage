@@ -15,16 +15,17 @@ User.load_storage
 
 # Write header file
 outfile = File.open('./output/Tickets.csv', "wb")
-outfile << (["Ticket #", "Subject", "Description", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Closure Date [yyyy-MM-dd HH:mm:ss z]", "Requester [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags", "Room Number[23198168]", "VirtuCom Serial Number[23152248]", "Smart Board Serial Number[21238920]", "MyRicoh Serial Number[21238930]"]).join(',')
+outfile << (["Ticket #", "Subject", "Description", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Closure Date [yyyy-MM-dd HH:mm:ss z]", "Requester [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags", "Queue", "Emailed To", "UserIP", "WEbagent", "ReferrerURL", "Webcookie", "ThreadId"]).join(',')
 outfile << "\n"
 
-outfile2 = File.open('./output/Ticket Comments.csv', "wb")
-outfile2 << (["Ticket #", "Ticket Comment #", "Comment", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Author [id]", "Public"]).join(',')
-outfile2 << "\n"
+# outfile2 = File.open('./output/Ticket Comments.csv', "wb")
+# outfile2 << (["Ticket #", "Ticket Comment #", "Comment", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Author [id]", "Public"]).join(',')
+# outfile2 << "\n"
 
 CSV.foreach(csv_filename, :headers=>true) do |row|
-  c = Case.new row["Incident #"], row["Room Number"], row ["Serial Number"], row["Client ID"], row["Client Email"], row["Location ID"], row["Incident Description"], row["Incident Resolution"], row["Category ID"], row["Open Date"], row["Close Date & Time"], row["Assigned To"], row["Last Name Assigned To"], row["Group"], row["State:"]
+  c = Case.new row["Ticket#"], row["Subject"], row["DESCRIPTION"], row["Create Date"], row["Closure Date"], row["Requester"], row["Group"], row["Assignee"], row["Type"], row["Status"], row["Priority"], row["Tags"], row["queue"], row["Emailed To"], row["UserIP"], row["WEbagent"], row["ReferrerURL"], row["Webcookie"], row["ThreadId"]
   c.save
+
 
   # user = User.find_or_create_by_key row[:requestor]
 
@@ -40,71 +41,79 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
   #   end
   # end
 
-  # add requester info into database if necessary (always overwrite with user email)
-  requester_email = row["Client Email"]
-  if requester_email.nil?
-    requester = User.default_user
-  else
-    requester = User.find_or_create_by_key row["Client ID"]
-    requester.email = requester_email.formatted_email
-    requester.name = requester.email.formatted_name if requester.name.nil?
-    requester.organization = row["Location ID"]
-  end
+  # # add requester info into database if necessary (always overwrite with user email)
+  # requester_email = row["Client Email"]
+  # if requester_email.nil?
+  #   requester = User.default_user
+  # else
+  #   requester = User.find_or_create_by_key row["Client ID"]
+  #   requester.email = requester_email.formatted_email
+  #   requester.name = requester.email.formatted_name if requester.name.nil?
+  #   requester.organization = row["Location ID"]
+  # end
 
-  # check to see if assignee is actually listed
-  # if row["Assigned To"].downcase!=""
-  if !row["Assigned To"].nil?
-    # check to see if assignee exist before adding it
-    assignee = User.find_by_key row["Assigned To"]
-    if assignee.nil?
-      # assignee doesn't currently exist in database
-      # add to database with a dummy email
-      assignee = User.find_or_create_by_key row["Assigned To"]
-      assignee.email = "unknown_assignee_"+row["Last Name Assigned To"]+"@muscogee.k12.ga.us"
-      assignee.name = assignee.email.formatted_name if assignee.name.nil?
-      assignee.organization = row["Location ID"]
-      assignee.act_as_agent c.group
-    else
-      # assignee already exist in database
-      # add group name if necessary
-      assignee.act_as_agent c.group
-    end
-  else
-    # assignee not listed
-    # use default agent if ticket is closed
-    if c.closed?
-      assignee = User.default_agent
-    else
-      # ok to keep assigne blank if ticket is not closed
-      assignee = User.new nil # nil id, nil email
-    end
-  end
+  # # check to see if assignee is actually listed
+  # # if row["Assigned To"].downcase!=""
+  # if !row["Assigned To"].nil?
+  #   # check to see if assignee exist before adding it
+  #   assignee = User.find_by_key row["Assigned To"]
+  #   if assignee.nil?
+  #     # assignee doesn't currently exist in database
+  #     # add to database with a dummy email
+  #     assignee = User.find_or_create_by_key row["Assigned To"]
+  #     assignee.email = "unknown_assignee_"+row["Last Name Assigned To"]+"@muscogee.k12.ga.us"
+  #     assignee.name = assignee.email.formatted_name if assignee.name.nil?
+  #     assignee.organization = row["Location ID"]
+  #     assignee.act_as_agent c.group
+  #   else
+  #     # assignee already exist in database
+  #     # add group name if necessary
+  #     assignee.act_as_agent c.group
+  #   end
+  # else
+  #   # assignee not listed
+  #   # use default agent if ticket is closed
+  #   if c.closed?
+  #     assignee = User.default_agent
+  #   else
+  #     # ok to keep assigne blank if ticket is not closed
+  #     assignee = User.new nil # nil id, nil email
+  #   end
+  # end
 
-  # ignore cases where old group is "PS DISPATCH" or "PS ZONE EROSION CONTROL"
-  if (row["Group"] == "PS DISPATCH") || (row["Group"] == "PS ZONE EROSION CONTROL")
-    count += 1
-    next
-  end
+  # # ignore cases where old group is "PS DISPATCH" or "PS ZONE EROSION CONTROL"
+  # if (row["Group"] == "PS DISPATCH") || (row["Group"] == "PS ZONE EROSION CONTROL")
+  #   count += 1
+  #   next
+  # end
 
   # puts c.inspect
 
   # Write to output csv
+  # quoted = Array.new
+  # [c.id, c.subject, c.description, c.created_at, c.resolved_at, requester.id, c.group, assignee.id, c.type, c.status, c.priority, c.tags, c.room_number, c.v_serial_number, c.sb_serial_number, c.r_serial_number].each do |element|
+  #   quoted << element.to_s.quote
+  # end
+  # outfile << quoted.join(',')
+  # outfile << "\n"
+
   quoted = Array.new
-  [c.id, c.subject, c.description, c.created_at, c.resolved_at, requester.id, c.group, assignee.id, c.type, c.status, c.priority, c.tags, c.room_number, c.v_serial_number, c.sb_serial_number, c.r_serial_number].each do |element|
+  [c.id, c.subject, c.description, c.create_date, c.closure_date, c.requester, c.group, c.assignee, c.type, c.status, c.priority, c.tags, c.queue, c.emailed_to, c.userip, c.webagent, c.referrerURL, c.webcookie, c.threadid].each do |element|
     quoted << element.to_s.quote
   end
   outfile << quoted.join(',')
   outfile << "\n"
 
-  # write outout for "ticket comments" only if resolution is not empty
-  if !c.resolution.nil?
-    quoted2 = Array.new
-    [c.id, count+1, c.resolution, c.comment_created_at, assignee.id, "TRUE"].each do |element|
-      quoted2 << element.to_s.quote
-    end
-    outfile2 << quoted2.join(',')
-    outfile2 << "\n"
-  end
+
+  # # write outout for "ticket comments" only if resolution is not empty
+  # if !c.resolution.nil?
+  #   quoted2 = Array.new
+  #   [c.id, count+1, c.resolution, c.comment_created_at, assignee.id, "TRUE"].each do |element|
+  #     quoted2 << element.to_s.quote
+  #   end
+  #   outfile2 << quoted2.join(',')
+  #   outfile2 << "\n"
+  # end
 
   count += 1
   next if max.nil? || max==0
@@ -114,4 +123,4 @@ end
 # Dump current User database
 User.dump_storage
 outfile.close
-outfile2.close
+# outfile2.close
