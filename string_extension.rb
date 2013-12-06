@@ -9,10 +9,6 @@ class String
     self.gsub '"', '\"'
   end
 
-  def doublequote
-    self.gsub '"', '""'
-  end
-
   def formatted_time
     return '' if self.downcase=='null'
     # Time.parse(self).strftime("%m/%d/%Y %T")
@@ -36,5 +32,13 @@ class String
     else
       "#{f_name} #{m_name} #{l_name}"
     end
+  end
+
+  def formatted_queue
+    tqueue = self.gsub /[()]/, ''
+    tqueue.gsub! ' - ', '_'
+    tqueue.gsub! ' ', '_'
+    tqueue.gsub! '/', '_'
+    tqueue.downcase!
   end
 end

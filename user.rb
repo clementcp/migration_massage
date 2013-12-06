@@ -3,12 +3,12 @@ require 'set'
 
 class User
   attr_reader :id, :groups_name, :type, :key, :twitter, :email, :name, :organization
-  attr_writer :type, :email, :name, :organization
+  attr_writer :type, :email, :name
   def initialize key
     @key = key
     @type = 'end user'
     @groups_name = Set.new
-    @name = @email
+    @name = key
 
     if twitter?
       @twitter = key
@@ -81,7 +81,7 @@ class User
     default_agent = self.find_or_create_by_key 'Zendesk_default_agent'
     default_agent.act_as_agent 'General'
     default_agent.name = "Default Agent"
-    default_agent.email = "defaultagent@test-for-moscogee.com"
+    default_agent.email = "defaultagent@test-for-tripadvisor.com"
     default_agent.save
     default_agent
   end
@@ -89,7 +89,7 @@ class User
   def self.default_user
     default_user = self.find_or_create_by_key "Zendesk_default_enduser"
     default_user.name = "Default User"
-    default_user.email  = "defaultenduser@test-for-muscogee.com"
+    default_user.email  = "defaultenduser@test-for-tripadvisor.com"
     default_user.save
     default_user
   end
