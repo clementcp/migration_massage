@@ -4,7 +4,7 @@ for tripadvisor:
 
 1. run export_tickets.rb on csv file for tickets (from customer) - this will build user.yaml some more, and generate output files tickets.csv
 
-2  run export_tickets_comments.rb.  this will generate ticket comments.csv
+2. run export_tickets_comments.rb.  this will generate ticket comments.csv
 
 3. run export_organizations.rb.  this will generate organizations.csv
 
