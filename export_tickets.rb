@@ -27,7 +27,7 @@ requiredAgents = Hash.new
 
 User.storage.each_pair do |key, user|
   next if !user.required_agent
-  requiredAgents[user.name] = user.email
+  requiredAgents[user.name.downcase] = user.email
 end
 
 puts requiredAgents.inspect
@@ -107,7 +107,7 @@ csv_filenames.each do |csv_filename|
     # check to see if requester field is defined or not
     # if row["Requester"].nil? | row["Requester"].empty?
     #   #requester field not defined. use default user
-    #   requester = User.default_user
+    #   requester = User.default_userf
     # else
     #   # requester is defined.  let's create if necessary
     #   requester = User.find_or_create_by_key row["Requester"]
@@ -134,16 +134,17 @@ csv_filenames.each do |csv_filename|
     # now check to see if AR owner is part of required agents
     if requiredAgents.has_key? row["AR Owner"].downcase
       # go ahead and start processing
-      assignee = User.find_by_key requiredAgents[row["AR Owner"].downcase]
+      assignee = User.find_by_key row["AR Owner"].downcase
       # first, check requester
       if row["Email"].nil?
-        #requester field not defined. use default user
+        #requester's email  not defined. use default user
         requester = User.default_user
       else
-        # requester is defined.  let's create if necessary
-        requester = User.find_or_create_by_key row["Email"]
+        # requester's email is defined.  let's create if necessary
+          requester = User.find_or_create_by_key row["Email"].formatted_email
+          requester.email = row["Email"].formatted_email
         if row["Full Name"].nil? | row["Full Name"].empty?
-          requester.name = row["Email"]
+          requester.name = row["Email"].formatted_email
         else
           requester.name = row ["Full Name"]
         end
@@ -160,7 +161,7 @@ csv_filenames.each do |csv_filename|
 
     # Write to output csv
     quoted = Array.new
-    [c.id, c.description, c.description, c.created_date, c.closure_date, requester.id, assignee.groups_name.to_a[0], assignee.id, c.type, c.status, c.priority, c.tags, c.old_ticket_id, c.urgency, c.sponsor_study, c.area, c.sub_area, c.sub_sub_area, c.resolution, c.overall_score_and_description, c.comments].each do |element|
+    [c.id, c.description, c.description, c.created_date, c.closure_date, requester.id, assignee.groups_name.to_a[0], assignee.id, c.type, c.status, c.priority, c.tags, c.id, c.urgency, c.sponsor_study, c.area, c.sub_area, c.sub_sub_area, c.resolution, c.overall_score_and_description, c.comments].each do |element|
       quoted << element.to_s.quote
     end
     outfile << quoted.join(',')

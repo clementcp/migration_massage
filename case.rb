@@ -4,9 +4,9 @@ require './storage.rb'
 class Case
   extend Storage
 
-  attr_reader :tags, :old_ticket_id, :area, :sub_area, :sub_sub_area, :resolution, :comments
-  def initialize old_ticket_id, status, urgency, created_date, resolved_date, closed_date, sponsor, study, area, sub_area, sub_sub_area, description, resolution, updated, overall_score_and_description, comments
-    @old_ticket_id = old_ticket_id
+  attr_reader :id, :tags, :area, :sub_area, :sub_sub_area, :resolution, :comments
+  def initialize id, status, urgency, created_date, resolved_date, closed_date, sponsor, study, area, sub_area, sub_sub_area, description, resolution, updated, overall_score_and_description, comments
+    @id = id
     @status = status
     @urgency = urgency
     @created_date = created_date
@@ -105,10 +105,10 @@ class Case
   #   @closure_date.formatted_time
   # end
 
-  def id
-    # puts @old_ticket_id.formatted_id
-    @old_ticket_id.formatted_id
-  end
+  # def id
+  #   # puts @old_ticket_id.formatted_id
+  #   @old_ticket_id.formatted_id
+  # end
 
   def description
     return '(empty)' if (@description.nil? | @description.empty?)

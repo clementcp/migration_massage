@@ -3,7 +3,7 @@ require 'set'
 
 class User
   attr_reader :id, :required_agent, :groups_name, :type, :key, :twitter, :name, :organization
-  attr_writer :type, :email, :name, :type, :phone
+  attr_writer :type, :email, :name, :type, :phone, :required_agent
   def initialize key
     @key = key
     @type = 'end user'

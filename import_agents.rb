@@ -11,9 +11,10 @@ count = 0
 User.load_storage
 
 CSV.foreach(csv_filename, :headers=>true) do |row|
-  a = User.find_or_create_by_key row["Email"]
+  a = User.find_or_create_by_key row["Name"].downcase
   a.act_as_agent row["Group"]
-  a.name = row["Name"].downcase
+  a.name = row["Name"]
+  a.email = row["Email"]
   a.type = row["Role"]
   a.required_agent = true
   a.save

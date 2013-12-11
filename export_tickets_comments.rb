@@ -18,12 +18,6 @@ outfile << "\n"
 
 User.load_storage
 
-requiredAgents = Hash.new
-User.storage.each_pair do |key, user|
-  next if !user.required_agent
-  requiredAgents[user.name] = user.email
-end
-
 csv_filenames.each do |csv_filename|
   puts "Processing #{csv_filename}"
   count = 0 # max is per file
@@ -45,10 +39,23 @@ csv_filenames.each do |csv_filename|
     #   author = User.find_or_create_by_key row[:author]
     # end
 
+    # grab author ID
+    # puts message.inspect
+
+    if User.find_by_key(row["ACT_OWNER"].downcase).nil?
+      # returns nil means user doens't exist
+      author = User.find_or_create_by_key row["ACT_OWNER"].downcase
+      author.name = row["ACT_OWNER"].downcase
+      author.email = "unknown_author_" + row["ACT_OWNER"].downcase + "@migrationformedidata.com"
+    else
+      # returns something so user already exist
+      author =User.find_or_create_by_key row["ACT_OWNER"].downcase
+    end
+
     # Write to output csv
     quoted = Array.new
     # [message.case_id, message.id, message.body, message.created_at, author.id, message.formatted_public].each do |element|
-    [message.case_id, message.id, message.body, message.created_at, message.author, message.formatted_public].each do |element|
+    [message.case_id, message.id, message.body, message.created_at, author.id, 'true'].each do |element|
       quoted << element.to_s.quote
     end
     outfile << quoted.join(',')

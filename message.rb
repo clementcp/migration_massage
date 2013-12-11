@@ -5,13 +5,13 @@ require './string_extension.rb'
 class Message
   extend Storage
 
-  attr_reader :id, :case_id, :body, :author
-  def initialize case_id, creation_date, author, message, message_id
-    @case_id = ar_number
-    @creation_date = act_created
-    @author = act_owner
-    @message = act_desc
-    @message_id = act_number
+  attr_reader :case_id, :id, :body
+  def initialize case_id, creation_date, author, body, id
+    @case_id = case_id
+    @creation_date = creation_date
+    @author = author
+    @body = body
+    @id = id
     @is_public = true
   end
 
@@ -26,8 +26,12 @@ class Message
   #   'FALSE'
   # end
 
+  # def case_id
+  #   @case_id.formatted_id
+  # end
+
   def created_at
-    @createdion_date.formatted_time_comment
+    @creation_date.formatted_time_comment
   end
 
   def case

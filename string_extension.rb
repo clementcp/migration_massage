@@ -22,7 +22,7 @@ class String
 
 def formatted_time_comment
     return '' if self.downcase=='null'
-    Time.strptime(self,"%m/%d/%Y %H:%M %p").strftime("%Y-%m-%d %T GMT-05:00")
+    Time.strptime(self,"%m/%d/%Y %k:%M").strftime("%Y-%m-%d %T GMT-05:00")
   end
 
 
@@ -33,8 +33,14 @@ def formatted_time_comment
   # end
 
   # for trip advisor
+  # def formatted_email
+  #   self.gsub '=', '-'
+  # end
+
+  # for medidata
   def formatted_email
-    self.gsub '=', '-'
+    temail = self.gsub ';', ','
+    return temail.split(',')[0]
   end
 
   def formatted_name
@@ -54,8 +60,8 @@ def formatted_time_comment
     tqueue.downcase!
   end
 
-  def formatted_id
-    self.gsub '1-', ''
-  end
+  # def formatted_id
+  #   self.gsub '1-', ''
+  # end
 
 end
