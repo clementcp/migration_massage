@@ -2,7 +2,7 @@ require 'yaml'
 require 'set'
 
 class User
-  attr_reader :id, :groups_name, :type, :key, :twitter, :email, :name, :organization
+  attr_reader :id, :groups_name, :type, :key, :twitter, :name, :organization
   attr_writer :type, :email, :name
   def initialize key
     @key = key
@@ -92,6 +92,10 @@ class User
     default_user.email  = "defaultenduser@test-for-tripadvisor.com"
     default_user.save
     default_user
+  end
+
+  def email
+    @email.formatted_email
   end
 end
 

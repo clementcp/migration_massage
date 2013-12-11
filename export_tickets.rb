@@ -15,7 +15,7 @@ User.load_storage
 
 # Write header file
 outfile = File.open('./output/Tickets.csv', "wb")
-outfile << (["Ticket #", "Subject", "Description", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Closure Date [yyyy-MM-dd HH:mm:ss z]", "Requester [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags", "Queue", "Emailed To[23683173]", "User IP[23721196]", "WEB agent[23690807]", "Referrer URL[23690817]", "Web cookie[23683183]", "Thread ID[23721206]"]).join(',')
+outfile << (["Ticket #", "Subject", "Description", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Closure Date [yyyy-MM-dd HH:mm:ss z]", "Requester [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags", "Queue[23746227]", "Emailed To[23741833]", "User IP[23753458]", "WEB agent[23753438]", "Referrer URL[23753448]", "Web cookie[23741843]", "Thread ID[23753468]"]).join(',')
 outfile << "\n"
 
 # outfile2 = File.open('./output/Ticket Comments.csv', "wb")

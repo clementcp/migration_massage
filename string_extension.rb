@@ -20,9 +20,15 @@ class String
 
   end
 
+  # for muscongee
+  # def formatted_email
+  #   self.gsub! /\{(.*?)\}/, ""
+  #   self.gsub! "SMTP:", ""
+  # end
+
+  # for trip advisor
   def formatted_email
-    self.gsub! /\{(.*?)\}/, ""
-    self.gsub! "SMTP:", ""
+    self.gsub '=', '-'
   end
 
   def formatted_name
