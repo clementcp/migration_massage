@@ -16,9 +16,15 @@ class String
     # for muscogee
     # Time.strptime(self,"%m/%d/%Y %H:%M:%S %p").strftime("%Y-%m-%d %T GMT-05:00")
     # Time.strptime(self,"%m/%d/%y %H:%M").strftime("%Y-%m-%d %T GMT-05:00")
-    Time.strptime(self,"%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %T GMT-05:00")
-
+    # Time.strptime(self,"%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %T GMT-05:00")
+    Time.strptime(self,"%m/%d/%Y").strftime("%Y-%m-%d GMT-05:00")
   end
+
+def formatted_time_comment
+    return '' if self.downcase=='null'
+    Time.strptime(self,"%m/%d/%Y %H:%M %p").strftime("%Y-%m-%d %T GMT-05:00")
+  end
+
 
   # for muscongee
   # def formatted_email
@@ -47,4 +53,9 @@ class String
     tqueue.gsub! '/', '_'
     tqueue.downcase!
   end
+
+  def formatted_id
+    self.gsub '1-', ''
+  end
+
 end

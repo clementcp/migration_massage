@@ -17,6 +17,13 @@ outfile << (["Ticket #", "Ticket Comment #", "Comment", "Creation Date [yyyy-MM-
 outfile << "\n"
 
 User.load_storage
+
+requiredAgents = Hash.new
+User.storage.each_pair do |key, user|
+  next if !user.required_agent
+  requiredAgents[user.name] = user.email
+end
+
 csv_filenames.each do |csv_filename|
   puts "Processing #{csv_filename}"
   count = 0 # max is per file
@@ -24,7 +31,7 @@ csv_filenames.each do |csv_filename|
     # message = Message.new row[:case_id], row[:message_id], row[:message], row[:creation_date], row[:author], row[:public]
 
   CSV.foreach(csv_filename, :headers=>true) do |row|
-    message = Message.new row["Ticket#"], row["TicketComment"], row["Comment"], row["Creation Date"], row["Author"], row["Public"]
+    message = Message.new row["AR_NUMBER"], row["ACT_CREATED"], row["ACT_OWNER"], row["ACT_DESC"], row["ACT_NUMBER"]
     message.save
 
     # puts message.inspect

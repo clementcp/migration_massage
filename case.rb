@@ -4,27 +4,24 @@ require './storage.rb'
 class Case
   extend Storage
 
-  attr_reader :id, :subject, :group, :type, :status, :priority, :tags, :emailed_to, :userip, :webagent, :referrerURL, :webcookie, :threadid
-  def initialize id, subject, description, create_date, closure_date, requester, group, assignee, type, status, priority, tags, queue, emailed_to, userip, webagent, referrerURL, webcookie, threadid
-    @id = id
-    @subject = subject
-    @description = description
-    @create_date = create_date
-    @closure_date = closure_date
-    @requester = requester
-    @group = group
-    @assignee = assignee
-    @type = type
+  attr_reader :tags, :old_ticket_id, :area, :sub_area, :sub_sub_area, :resolution, :comments
+  def initialize old_ticket_id, status, urgency, created_date, resolved_date, closed_date, sponsor, study, area, sub_area, sub_sub_area, description, resolution, updated, overall_score_and_description, comments
+    @old_ticket_id = old_ticket_id
     @status = status
-    @priority = priority
-    @tags = tags
-    @queue = queue
-    @emailed_to = emailed_to
-    @userip = userip
-    @webagent = webagent
-    @referrerURL = referrerURL
-    @webcookie = webcookie
-    @threadid = threadid
+    @urgency = urgency
+    @created_date = created_date
+    @resolved_date = resolved_date
+    @closed_date = closed_date
+    @sponsor = sponsor
+    @study = study
+    @area = area
+    @sub_area = sub_area
+    @sub_sub_area = sub_sub_area
+    @description = description
+    @resolution = resolution
+    @updated = updated
+    @overall_score_and_description = overall_score_and_description
+    @comments = comments
   end
 
   # attr_reader :id, :room_number, :resolution
@@ -92,25 +89,103 @@ class Case
   # end
 
 
-  def queue
-    if !@queue.empty?
-      return "legacy_queue_" + @queue.formatted_queue
-    else
-      return ""
-    end
-  end
+  # def queue
+  #   if !@queue.empty?
+  #     return "legacy_queue_" + @queue.formatted_queue
+  #   else
+  #     return ""
+  #   end
+  # end
 
-  def create_date
-    @create_date.formatted_time
-  end
+  # def create_date
+  #   @create_date.formatted_time
+  # end
 
-  def closure_date
-    @closure_date.formatted_time
+  # def closure_date
+  #   @closure_date.formatted_time
+  # end
+
+  def id
+    # puts @old_ticket_id.formatted_id
+    @old_ticket_id.formatted_id
   end
 
   def description
-    return "(empty)" if (@description.nil? | @description.empty?)
+    return '(empty)' if (@description.nil? | @description.empty?)
     @description
   end
+
+  def created_date
+    @created_date.formatted_time
+  end
+
+  def closure_date
+    return @closed_date.formatted_time if self.closed?
+    @resolved_date.formatted_time
+  end
+
+  def type
+    "Incident"
+  end
+
+  def status
+    return 'solved' if (@status.downcase == 'delete' or @status.downcase == 'resolved')
+    @status.downcase
+  end
+
+  def priority
+  #low normal high urgent
+    if !@urgency.nil?
+      case @urgency.downcase
+      when 'medium'
+        return 'normal'
+      when 'cirt'
+        return 'urgent'
+      else
+        return @urgency.downcase
+      end
+    else
+      return ''
+    end
+  end
+
+  def urgency
+    if !@urgency.nil?
+      case @urgency.downcase
+      when 'low'
+        return 'low_urgency'
+      when 'medium'
+        return 'medium_urgency'
+      when 'high'
+        return 'high_urgency'
+      when 'cirt'
+        return 'cirt_urgency'
+      else
+        return 'medium_urgency'
+      end
+    else
+      return ''
+    end
+  end
+
+  def sponsor_study
+    return @sponsor + ' ' + @study
+  end
+
+  def overall_score_and_description
+    if @overall_score_and_description.nil?
+      @overall_score_and_description
+    else
+      case @overall_score_and_description.downcase
+      when 'yes'
+        return 'good'
+      when 'no'
+        return 'bad'
+      else
+        return 'unoffered'
+      end
+    end
+  end
+
 end
 

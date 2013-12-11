@@ -6,13 +6,13 @@ class Message
   extend Storage
 
   attr_reader :id, :case_id, :body, :author
-  def initialize case_id, message_id, message, creation_date, author, is_public
-    @case_id = case_id
-    @id = message_id
-    @body = message
-    @created_at = creation_date
-    @author = author
-    @is_public = is_public
+  def initialize case_id, creation_date, author, message, message_id
+    @case_id = ar_number
+    @creation_date = act_created
+    @author = act_owner
+    @message = act_desc
+    @message_id = act_number
+    @is_public = true
   end
 
   def public?
@@ -21,13 +21,13 @@ class Message
     true
   end
 
-  def formatted_public
-    return 'TRUE' if public?
-    'FALSE'
-  end
+  # def formatted_public
+  #   return 'TRUE' if public?
+  #   'FALSE'
+  # end
 
   def created_at
-    @created_at.formatted_time
+    @createdion_date.formatted_time_comment
   end
 
   def case

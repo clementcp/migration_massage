@@ -11,13 +11,16 @@ count = 0
 User.load_storage
 
 CSV.foreach(csv_filename, :headers=>true) do |row|
-  a = User.find_or_create_by_key row["Email"]
-  a.act_as_agent row["Group"]
-  a.name = row["Name"].downcase
-  a.type = row["Role"]
-  a.required_agent = true
-  a.save
-  # puts a.id, a.names
+  g = User.find_or_create_by_key row["Email Address"]
+  g.name = row["Full Name"]
+  g.type = row["Role"]
+  g.phone = row ["Phone"]
+  g.save
+  # puts g.inspect
+  # puts g.id, g.name
+
+  count +=1
+  puts "Processing #{count} users ... " if count % 500 == 0
 end
 
 # Dump current User database
