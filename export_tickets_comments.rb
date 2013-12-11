@@ -49,7 +49,7 @@ csv_filenames.each do |csv_filename|
       author.email = "unknown_author_" + row["ACT_OWNER"].downcase + "@migrationformedidata.com"
     else
       # returns something so user already exist
-      author =User.find_or_create_by_key row["ACT_OWNER"].downcase
+      author = User.find_or_create_by_key row["ACT_OWNER"].downcase
     end
 
     # Write to output csv
