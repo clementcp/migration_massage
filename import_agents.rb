@@ -28,7 +28,14 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
 
   a.save
   # puts a.id, a.names
+
+  count +=1
+  # break if count >= 5000
+  puts "Processing #{count} users ... " if count % 100 == 0
+
 end
+
+puts "Processed #{count} users in total!"
 
 # Dump current User database
 User.dump_storage

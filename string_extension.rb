@@ -28,7 +28,7 @@ def formatted_time_comment
 
   # for muscongee
   # def formatted_email
-  #   self.gsub! /\{(.*?)\}/, ""
+    # self.gsub! /\{(.*?)\}/, ""
   #   self.gsub! "SMTP:", ""
   # end
 
@@ -39,18 +39,34 @@ def formatted_time_comment
 
   # for medidata
   def formatted_email
+    if self.downcase == '(blank)'
+      self
+    end
     temail = self.gsub ';', ','
-    return temail.split(',')[0]
+    temail.gsub! /[*<(>)"\s\t]/, ''
+    # temail.gsub! /\s/, ''
+    temail.split(',')[0]
+  end
+
+  def formatted_phone
+    return self if self.nil?
+    self.gsub /[\t]/, ''
   end
 
   def formatted_name
-    l_name, f_name, m_name = self.split('@').first.split('.')
-    if m_name.nil?
-      "#{f_name} #{l_name}"
-    else
-      "#{f_name} #{m_name} #{l_name}"
-    end
+    return self if self.nil?
+    self.gsub /[\s\t\r\n]/, ''
   end
+
+
+  # def formatted_name
+  #   l_name, f_name, m_name = self.split('@').first.split('.')
+  #   if m_name.nil?
+  #     "#{f_name} #{l_name}"
+  #   else
+  #     "#{f_name} #{m_name} #{l_name}"
+  #   end
+  # end
 
   def formatted_queue
     tqueue = self.gsub /[()]/, ''

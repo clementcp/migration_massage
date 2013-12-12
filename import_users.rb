@@ -11,17 +11,31 @@ count = 0
 User.load_storage
 
 CSV.foreach(csv_filename, :headers=>true) do |row|
-  g = User.find_or_create_by_key row["Email Address"]
-  g.name = row["Full Name"]
+  # for end users, key = email
+  # for agents, key = name (initial + lastname) downcase
+
+  if row["Role"].downcase == 'end-user'
+    g = User.find_or_create_by_key row["Email Address"].formatted_email
+  else
+    g = User.find_or_create_by_key row["Full Name"].downcase
+  end
+  g.name = row["Full Name"].formatted_name
+  g.email = row["Email Address"].formatted_email
   g.type = row["Role"]
-  g.phone = row ["Phone"]
+  if !row["Phone"].nil?
+    g.phone = row ["Phone"].formatted_phone
+  end
   g.save
+
   # puts g.inspect
   # puts g.id, g.name
 
   count +=1
+  # break if count >= 5000
   puts "Processing #{count} users ... " if count % 500 == 0
 end
+
+puts "Processed #{count} users in total!"
 
 # Dump current User database
 User.dump_storage
