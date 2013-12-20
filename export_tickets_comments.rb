@@ -73,7 +73,7 @@ csv_filenames.each do |csv_filename|
       # [message.case_id, message.id, message.body, message.created_at, author.id, message.formatted_public].each do |element|
       # [message.case_id, message.id, message.body, message.created_at, author.id, 'true'].each do |element|
 
-      [message.case_id, count+1, message.body, message.created_at, author.id, message.is_public].each do |element|
+      [message.case_id, message.id, message.body, message.created_at, author.id, message.is_public].each do |element|
         quoted << element.to_s.quote
       end
       outfile << quoted.join(',')
