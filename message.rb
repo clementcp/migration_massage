@@ -5,14 +5,14 @@ require './string_extension.rb'
 class Message
   extend Storage
 
-  attr_reader :case_id, :id, :body
-  def initialize case_id, creation_date, author, body, id
+  attr_reader :id, :case_id, :body, :is_public
+  def initialize id, case_id, is_public, creation_date, body
+    @id = id
     @case_id = case_id
+    @is_public = is_public
     @creation_date = creation_date
-    @author = author
     @body = body
     @id = id
-    @is_public = true
   end
 
   def public?
@@ -31,12 +31,12 @@ class Message
   # end
 
   def created_at
-    @creation_date.formatted_time_comment
+    @creation_date.formatted_time
   end
 
-  def case
-    Case.find_by_id @case_id
-  end
+  # def case
+  #   Case.find_by_id @case_id
+  # end
 
   def save
     self.class.save self

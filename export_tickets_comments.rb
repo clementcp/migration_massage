@@ -25,7 +25,7 @@ csv_filenames.each do |csv_filename|
     # message = Message.new row[:case_id], row[:message_id], row[:message], row[:creation_date], row[:author], row[:public]
 
   CSV.foreach(csv_filename, :headers=>true) do |row|
-    message = Message.new row["AR_NUMBER"], row["ACT_CREATED"], row["ACT_OWNER"], row["ACT_DESC"], row["ACT_NUMBER"]
+    message = Message.new count+1, row["Ticket #"], row["Public"], row["Creation Date"], row["Comment"]
     message.save
 
     # puts message.inspect
@@ -42,24 +42,44 @@ csv_filenames.each do |csv_filename|
     # grab author ID
     # puts message.inspect
 
-    if User.find_by_key(row["ACT_OWNER"].downcase).nil?
-      # returns nil means user doens't exist
-      author = User.find_or_create_by_key row["ACT_OWNER"].downcase
-      author.name = row["ACT_OWNER"].downcase
-      author.email = "unknown_author_" + row["ACT_OWNER"].downcase + "@migrationformedidata.com"
+    # if User.find_by_key(row["Author"].downcase).nil?
+    #   # returns nil means user doens't exist
+    #   author = User.find_or_create_by_key row["ACT_OWNER"].downcase
+    #   author.name = row["ACT_OWNER"].downcase
+    #   author.email = "unknown_author_" + row["ACT_OWNER"].downcase + "@migrationformedidata.com"
+    # else
+    #   # returns something so user already exist
+    #   author = User.find_or_create_by_key row["ACT_OWNER"].downcase
+    # end
+
+    # limelight
+    # check to see if author is defined
+    if row["Author"].nil?
+      # author is nil
+      author = User.default_agent
     else
-      # returns something so user already exist
-      author = User.find_or_create_by_key row["ACT_OWNER"].downcase
+      if row["Author"].empty?
+        # author is empty!
+        author = User.default_agent
+      else
+        # author is defined! look for it
+        author = User.find_or_create_by_key row["Author"]
+      end
     end
 
-    # Write to output csv
-    quoted = Array.new
-    # [message.case_id, message.id, message.body, message.created_at, author.id, message.formatted_public].each do |element|
-    [message.case_id, message.id, message.body, message.created_at, author.id, 'true'].each do |element|
-      quoted << element.to_s.quote
+    if !row["Comment"].nil?
+      # Write to output csv
+      quoted = Array.new
+      # [message.case_id, message.id, message.body, message.created_at, author.id, message.formatted_public].each do |element|
+      # [message.case_id, message.id, message.body, message.created_at, author.id, 'true'].each do |element|
+
+      [message.case_id, count+1, message.body, message.created_at, author.id, message.is_public].each do |element|
+        quoted << element.to_s.quote
+      end
+      outfile << quoted.join(',')
+      outfile << "\n"
     end
-    outfile << quoted.join(',')
-    outfile << "\n"
+
 
     count += 1
     next if max.nil?

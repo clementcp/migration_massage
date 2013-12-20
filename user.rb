@@ -2,8 +2,8 @@ require 'yaml'
 require 'set'
 
 class User
-  attr_reader :id, :required_agent, :groups_name, :type, :key, :twitter, :name, :organization, :phone
-  attr_writer :type, :email, :name, :type, :phone, :required_agent
+  attr_reader :id, :groups_name, :type, :key, :name, :phone
+  attr_writer :type, :email, :name, :type, :phone
   def initialize key
     @key = key
     @type = 'end user'
@@ -82,7 +82,7 @@ class User
     default_agent = self.find_or_create_by_key 'Zendesk_default_agent'
     default_agent.act_as_agent 'General'
     default_agent.name = "Default Agent"
-    default_agent.email = "defaultagent@test-for-medidata.com"
+    default_agent.email = "defaultagent@test-for-limelight.com"
     default_agent.save
     default_agent
   end
@@ -90,7 +90,7 @@ class User
   def self.default_user
     default_user = self.find_or_create_by_key "Zendesk_default_enduser"
     default_user.name = "Default User"
-    default_user.email  = "defaultenduser@test-for-medidata.com"
+    default_user.email  = "defaultenduser@test-for-limelight.com"
     default_user.save
     default_user
   end

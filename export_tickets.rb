@@ -37,16 +37,16 @@ outfile = File.open('./output/Tickets.csv', "wb")
 outfile << (["Ticket #", "Subject", "Description", "Creation Date [yyyy-MM-dd z]", "Closure Date [yyyy-MM-dd z]", "Requester [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags"]).join(',')
 outfile << "\n"
 
-outfile2 = File.open('./output/Ticket Comments.csv', "wb")
-outfile2 << (["Ticket #", "Ticket Comment #", "Comment", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Author [id]", "Public"]).join(',')
-outfile2 << "\n"
+# outfile2 = File.open('./output/Ticket Comments.csv', "wb")
+# outfile2 << (["Ticket #", "Ticket Comment #", "Comment", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Author [id]", "Public"]).join(',')
+# outfile2 << "\n"
 
 csv_filenames.each do |csv_filename|
   puts "Processing #{csv_filename}"
   count = 0
 
   CSV.foreach(csv_filename, :headers=>true) do |row|
-    c = Case.new row["Case Owner"], row["Case Number"], row["Priority"], row["Subject"], row["Description"], row["Case Comments"], row["Date/Time Opened"], row["Date/Time Closed"], row["Open"], row["Closed"], row["Account Name"]
+    c = Case.new row["Ticket #"], row["Subject"], row["Description"], row["Creation Date [EN]"], row["Closure Date"], row["Type"], row["Solved"], row["Priority"], row["Tags"]
     c.save
 
     # user = User.find_or_create_by_key row[:requestor]
@@ -103,31 +103,49 @@ csv_filenames.each do |csv_filename|
     #   end
     # end
 
-    # trip advisor
+    # limelight
     # check to see if requester field is defined or not
-    # if row["Requester"].nil? | row["Requester"].empty?
-    #   #requester field not defined. use default user
-    #   requester = User.default_userf
-    # else
-    #   # requester is defined.  let's create if necessary
-    #   requester = User.find_or_create_by_key row["Requester"]
-    # end
+    if row["Requester"].nil?
+      #requester field nil. use default user
+      requester = User.default_user
+    else
+      # request field is not nil
+      if row["Requester"].empty?
+        # requester field is empty
+        requester = User.default_user
+      else
+        # requester is defined.  let's create if necessary
+        requester = User.find_or_create_by_key row["Requester"]
+      end
+    end
 
-    # # check to see if assignee field is defined or not
-    # if row["Assignee"].nil? | row["Assignee"].empty?
-    #   #assignee field not defined. check to see if ticket status is closed or not
-    #   if c.closed?
-    #     # use default assignee
-    #     assignee = User.default_agent
-    #   else
-    #     # ticket status is not closed, so just leave it blank
-    #     assignee = User.new nil
-    #   end
-    # else
-    #   # assignee is defined.  create if necessary
-    #   assignee = User.find_or_create_by_key row["Assignee"]
-    #   assignee.act_as_agent row["Group"]
-    # end
+    # check to see if assignee field is defined or not
+    if row["Assignee"].nil?
+      #assignee field is nil
+      if c.solved?
+        # use default assignee
+        assignee = User.default_agent
+      else
+        # ticket status is not closed, so just leave it blank
+        assignee = User.new nil
+      end
+    else
+      if row["Assignee"].empty?
+        #assignee field is empty.  check ticket status
+        if c.solved?
+          # use default assignee
+          assignee = User.default_agent
+        else
+          # ticket status is not closed, so just leave it blank
+          assignee = User.new nil
+        end
+      else
+        # assignee is defined (not nil, not empty).  create if necessary
+        assignee = User.find_or_create_by_key row["Assignee"]
+        assignee.act_as_agent row["Group"]
+      end
+    end
+
 
     # # now check to see if AR owner is part of required agents
     # if requiredAgents.has_key? row["AR Owner"].downcase
@@ -159,7 +177,7 @@ csv_filenames.each do |csv_filename|
 
     # Write to output csv
     quoted = Array.new
-    [c.id, c.subject, c.description, c.created_date, c.closure_date, c.case_owner, 'general', c.case_owner, c.type, c.status, c.priority, ''].each do |element|
+    [c.id, c.subject, c.description, c.created_date, c.closure_date, requester.id, assignee.groups_name.to_a[0], assignee.id, c.type, c.status, c.priority, c.tags].each do |element|
       quoted << element.to_s.quote
     end
     outfile << quoted.join(',')
@@ -167,14 +185,14 @@ csv_filenames.each do |csv_filename|
 
 
     # # write outout for "ticket comments"
-    if !c.case_comments.nil?
-      quoted2 = Array.new
-      [c.id, count+1, c.case_comments, c.created_date, c.case_owner, "TRUE"].each do |element|
-      quoted2 << element.to_s.quote
-      end
-      outfile2 << quoted2.join(',')
-      outfile2 << "\n"
-    end
+    # if !c.case_comments.nil?
+    #   quoted2 = Array.new
+    #   [c.id, count+1, c.case_comments, c.created_date, c.case_owner, "TRUE"].each do |element|
+    #   quoted2 << element.to_s.quote
+    #   end
+    #   outfile2 << quoted2.join(',')
+    #   outfile2 << "\n"
+    # end
 
     count += 1
     next if max.nil? || max==0
@@ -186,4 +204,4 @@ end
 # Dump current User database
 User.dump_storage
 outfile.close
-outfile2.close
+# outfile2.close

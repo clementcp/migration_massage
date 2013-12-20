@@ -20,10 +20,10 @@ class String
     Time.strptime(self,"%m/%d/%y %H:%M").strftime("%Y-%m-%d %T GMT-05:00")
   end
 
-def formatted_time_comment
-    return '' if self.downcase=='null'
-    Time.strptime(self,"%m/%d/%Y %k:%M").strftime("%Y-%m-%d %T GMT-05:00")
-  end
+  # def formatted_time_comment
+  #   return '' if self.downcase=='null'
+  #   Time.strptime(self,"%m/%d/%Y %k:%M").strftime("%Y-%m-%d %T GMT-05:00")
+  # end
 
 
   # for muscongee

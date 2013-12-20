@@ -4,19 +4,17 @@ require './storage.rb'
 class Case
   extend Storage
 
-  attr_reader :id, :subject, :description, :case_owner, :case_comments
-  def initialize case_owner, id, priority, subject, description, case_comments, date_opened, date_closed, status_open, status_closed, account_name
-    @case_owner = case_owner
+  attr_reader :id, :subject, :priority, :tags
+  def initialize id, subject, description, creation_date, closure_date, type, status, priority, tags
     @id = id
-    @priority = priority
     @subject = subject
     @description = description
-    @case_comments = case_comments
-    @date_opened = date_opened
-    @date_closed = date_closed
-    @status_open = status_open
-    @status_closed = status_closed
-    @account_name = account_name
+    @creation_date = creation_date
+    @closure_date = closure_date
+    @type = type
+    @status = status
+    @priority = priority
+    @tags = tags
   end
 
   def save
@@ -24,21 +22,23 @@ class Case
   end
 
   def status
-    return 'open' if @status_open == 1
-    return 'closed' if @status_closed == 1
-    return 'ERROR'
+    @status.downcase
   end
 
-  def closed?
-    @status_closed == 1
+  # def closed?
+  #   @status.downcase == 'closed'
+  # end
+
+  def solved?
+    @status.downcase == 'solved'
   end
 
   def created_date
-    @date_opened.formatted_time
+    @creation_date.formatted_time
   end
 
   def closure_date
-    @date_closed.formatted_time if self.closed?
+    return @closure_date.formatted_time if self.solved?
     ''
   end
 
@@ -47,20 +47,21 @@ class Case
   end
 
   def priority
-  #low normal high urgent
-    case @priority.downcase
-    when 'urgent!'
-      return 'urgent'
-    when 'p1'
-      return 'urgent'
-    when 'p2'
-      return 'high'
-    when 'p3'
-      return 'medium'
-    when 'p4'
-      return 'low'
+    if @priority.downcase == 'medium'
+      return 'normal'
+    end
+    @priority.downcase
+  end
+
+  def description
+    if @description.nil?
+      return "(empty)"
     else
-      return @priority.downcase
+      if @description.empty?
+        return "(empty)"
+      else
+        return @description
+      end
     end
   end
 
