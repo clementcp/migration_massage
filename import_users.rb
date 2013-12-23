@@ -11,20 +11,27 @@ count = 0
 User.load_storage
 
 CSV.foreach(csv_filename, :headers=>true) do |row|
+  # for trip advisors
   # for end users, key = email
   # for agents, key = name (initial + lastname) downcase
 
-  if row["Role"].downcase == 'end-user'
-    g = User.find_or_create_by_key row["Email Address"].formatted_email
-  else
-    g = User.find_or_create_by_key row["Full Name"].downcase
-  end
-  g.name = row["Full Name"].formatted_name
-  g.email = row["Email Address"].formatted_email
-  g.type = row["Role"]
-  if !row["Phone"].nil?
-    g.phone = row ["Phone"].formatted_phone
-  end
+  # if row["Role"].downcase == 'end-user'
+  #   g = User.find_or_create_by_key row["Email Address"].formatted_email
+  # else
+  #   g = User.find_or_create_by_key row["Full Name"].downcase
+  # end
+  # g.name = row["Full Name"].formatted_name
+  # g.email = row["Email Address"].formatted_email
+  # g.type = row["Role"]
+  # if !row["Phone"].nil?
+  #   g.phone = row ["Phone"].formatted_phone
+  # end
+  # g.save
+
+  # for limelight
+
+  g = User.find_or_create_by_key row["email"]
+  g.name = row["Name"]
   g.save
 
   # puts g.inspect

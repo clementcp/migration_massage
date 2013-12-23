@@ -109,6 +109,20 @@ class User
       return @type.downcase
     end
   end
+
+  # def self.find_by_name name
+  #   self.load_storage
+  #   self.storage.each do |key|
+  #     puts "aa debug : key = ", key
+  #     puts "aa debug2 : self.storage[key] = ", self.storage[key].to_s
+  #     # if storage[key].name == name
+  #     #   return key
+  #     # else
+  #     #   return false
+  #     # end
+  #   end
+  # end
+
 end
 
 class String

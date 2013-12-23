@@ -68,6 +68,11 @@ class String
   #   end
   # end
 
+  def formatted_email
+    return self if self.include? '@'
+    self.gsub ' ', '.'
+  end
+
   def formatted_queue
     tqueue = self.gsub /[()]/, ''
     tqueue.gsub! ' - ', '_'

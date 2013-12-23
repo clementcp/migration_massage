@@ -141,7 +141,7 @@ csv_filenames.each do |csv_filename|
         end
       else
         # assignee is defined (not nil, not empty).  create if necessary
-        assignee = User.find_or_create_by_key row["Assignee"]
+        assignee = User.find_or_create_by_key row["Assignee"].formatted_email + "@legacylimelightuser.com"
         assignee.act_as_agent row["Group"]
       end
     end
