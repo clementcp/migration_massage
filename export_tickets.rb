@@ -115,7 +115,16 @@ csv_filenames.each do |csv_filename|
         requester = User.default_user
       else
         # requester is defined.  let's create if necessary
-        requester = User.find_or_create_by_key row["Requester"]
+        requester = User.find_by_key row["Requester"]
+        if requester.nil?
+          # requester doesn't already exist!
+          # go ahead and create user and plug in email address as name
+          requester = User.find_or_create_by_key row["Requester"]
+          requester.name = row["Requester"]
+        else
+          # user already exist
+          requester = User.find_or_create_by_key row["Requester"]
+        end
       end
     end
 
@@ -140,11 +149,38 @@ csv_filenames.each do |csv_filename|
           assignee = User.new nil
         end
       else
-        # assignee is defined (not nil, not empty).  create if necessary
-        assignee = User.find_or_create_by_key row["Assignee"].formatted_email + "@legacylimelightuser.com"
-        assignee.act_as_agent row["Group"]
+        # assignee is defined (not nil, not empty).
+        # create if necessary
+        # recall: agent's key = name downcase
+        assignee = User.find_by_key row["Assignee"].downcase
+        if assignee.nil?
+          # assignee doesn't currently exist in database
+          # add to database with a dummy email
+          assignee = User.find_or_create_by_key row["Assignee"].downcase
+          fakeEmail = row["Assignee"].gsub ' ', '.'
+          fakeEmail = fakeEmail.gsub ':', '.'
+          assignee.email = fakeEmail + "@legacylimelightuser.com"
+          assignee.name = row["Assignee"]
+          assignee.act_as_agent row["Group"]
+        else
+          # assignee already exist in database
+          # add group name if necessary
+          assignee.act_as_agent row["Group"]
+        end
       end
     end
+
+    # ticket group: if it's not specified, use "general"
+    if row["Group"].nil?
+      tGroup = "General"
+    else
+      if row["Group"].empty?
+        tGroup = "General"
+      else
+        tGroup = row["Group"]
+      end
+    end
+
 
 
     # # now check to see if AR owner is part of required agents
@@ -177,7 +213,7 @@ csv_filenames.each do |csv_filename|
 
     # Write to output csv
     quoted = Array.new
-    [c.id, c.subject, c.description, c.created_date, c.closure_date, requester.id, assignee.groups_name.to_a[0], assignee.id, c.type, c.status, c.priority, c.tags].each do |element|
+    [c.id, c.subject, c.description, c.created_date, c.closure_date, requester.id, tGroup, assignee.id, c.type, c.status, c.priority, c.tags].each do |element|
       quoted << element.to_s.quote
     end
     outfile << quoted.join(',')

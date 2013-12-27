@@ -29,7 +29,7 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
   # g.save
 
   # for limelight
-
+  # limelight : end user's key = email
   g = User.find_or_create_by_key row["email"]
   g.name = row["Name"]
   g.save

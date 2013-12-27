@@ -38,25 +38,25 @@ class String
   # end
 
   # for medidata
-  def formatted_email
-    if self.downcase == '(blank)'
-      self
-    end
-    temail = self.gsub ';', ','
-    temail.gsub! /[*<(>)"\s\t]/, ''
-    # temail.gsub! /\s/, ''
-    temail.split(',')[0]
-  end
+  # def formatted_email
+  #   if self.downcase == '(blank)'
+  #     return self
+  #   end
+  #   temail = self.gsub ';', ','
+  #   temail.gsub! /[*<(>)"\s\t]/, ''
+  #   # temail.gsub! /\s/, ''
+  #   temail.split(',')[0]
+  # end
 
-  def formatted_phone
-    return self if self.nil?
-    self.gsub /[\t]/, ''
-  end
+  # def formatted_phone
+  #   return self if self.nil?
+  #   self.gsub /[\t]/, ''
+  # end
 
-  def formatted_name
-    return self if self.nil?
-    self.gsub /[\s\t\r\n]/, ''
-  end
+  # def formatted_name
+  #   return self if self.nil?
+  #   self.gsub /[\s\t\r\n]/, ''
+  # end
 
 
   # def formatted_name
@@ -68,10 +68,10 @@ class String
   #   end
   # end
 
-  def formatted_email
-    return self if self.include? '@'
-    self.gsub ' ', '.'
-  end
+  # def formatted_email
+  #   return self if self.include? '@'
+  #   self.gsub ' ', '.'
+  # end
 
   def formatted_queue
     tqueue = self.gsub /[()]/, ''
