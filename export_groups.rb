@@ -21,6 +21,7 @@ User.storage.each_pair do |key, user|
 
   user.groups_name.each do |group_name|
     quoted = Array.new
+    next if group_name.nil?
     [group_name, user.name].each do |element|
       quoted << element.to_s.quote
     end

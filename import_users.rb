@@ -29,8 +29,14 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
   # g.save
 
   # for limelight
-  # limelight : end user's key = email
-  g = User.find_or_create_by_key row["email"]
+
+  email = row["email"]
+  if email.nil?
+    # create a fake email address
+    email = row["Name"].gsub ' ', '.'
+    email = email + "@legacylimelightuser.com"
+  end
+  g = User.find_or_create_by_key email.formatted_email
   g.name = row["Name"]
   g.save
 

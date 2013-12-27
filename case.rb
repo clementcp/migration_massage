@@ -54,14 +54,10 @@ class Case
   end
 
   def description
-    if @description.nil?
+    if @description.nil? || @description.empty? || @description == " "
       return "(blank)"
     else
-      if @description.empty?
-        return "(blank)"
-      else
-        return @description
-      end
+      return @description
     end
   end
 

@@ -54,16 +54,22 @@ csv_filenames.each do |csv_filename|
 
     # limelight
     # check to see if author is defined
-    if row["Author"].nil?
+    if row["Author"].nil? || row["Author"].empty?
       # author is nil
-      author = User.default_agent
+      author = User.default_commenter
     else
-      if row["Author"].empty?
-        # author is empty!
-        author = User.default_agent
-      else
-        # author is defined! look for it
-        author = User.find_or_create_by_key row["Author"]
+      # author is defined! look for it
+      author = User.find_by_name row["Author"]
+      if author.nil?
+        # authur doesn't currently exist in database
+        # add to database with a dummy email
+        fakeEmail = row["Author"].gsub ' ', '.'
+        fakeEmail = fakeEmail.gsub ':', '.'
+        fakeEmail = fakeEmail + "@legacylimelightuser.com"
+        author = User.new fakeEmail
+        author.name = row["Author"]
+        author.act_as_agent "General"
+        author.save
       end
     end
 

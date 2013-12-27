@@ -17,7 +17,7 @@ class String
     # Time.strptime(self,"%m/%d/%Y %H:%M:%S %p").strftime("%Y-%m-%d %T GMT-05:00")
     # Time.strptime(self,"%m/%d/%y %H:%M").strftime("%Y-%m-%d %T GMT-05:00")
     # Time.strptime(self,"%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %T GMT-05:00")
-    Time.strptime(self,"%m/%d/%y %H:%M").strftime("%Y-%m-%d %T GMT-05:00")
+    Time.strptime(self,"%m/%d/%y %H:%M").strftime("%Y-%m-%d %T GMT-08:00")
   end
 
   # def formatted_time_comment
@@ -58,6 +58,14 @@ class String
   #   self.gsub /[\s\t\r\n]/, ''
   # end
 
+
+  # for limelight
+  def formatted_email
+    temail = self.gsub ';', ','
+    temail.gsub! /[*<(>)"\s\t]/, ''
+    # temail.gsub! /\s/, ''
+    temail.split(',')[0]
+    end
 
   # def formatted_name
   #   l_name, f_name, m_name = self.split('@').first.split('.')

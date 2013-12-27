@@ -16,17 +16,16 @@ count = 0
 User.load_storage
 
 CSV.foreach(csv_filename, :headers=>true) do |row|
-  # limelight : agent's key = name downcase
-  a = User.find_or_create_by_key row["Name"].downcase
+  email = row["Email"]
+  if email.nil?
+    # create a fake email address
+    email = row["Name"].gsub ' ', '.'
+    email = email + "@legacylimelightuser.com"
+  end
+
+  a = User.find_or_create_by_key  email
   a.act_as_agent "General"
   a.name = row["Name"]
-  if row["Email"].nil?
-    # create a fake email address
-    fakeEmail = row["Name"].gsub ' ', '.'
-    a.email = fakeEmail + "@legacylimelightuser.com"
-  else
-    a.email = row["Email"]
-  end
 
   # a.type = row["Role"]
 

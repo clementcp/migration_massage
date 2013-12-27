@@ -34,7 +34,7 @@ User.load_storage
 
 # Write header file
 outfile = File.open('./output/Tickets.csv', "wb")
-outfile << (["Ticket #", "Subject", "Description", "Creation Date [yyyy-MM-dd z]", "Closure Date [yyyy-MM-dd z]", "Requester [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags"]).join(',')
+outfile << (["Ticket #", "Subject", "Description", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Closure Date [yyyy-MM-dd HH:mm:ss z]", "Requester [id]", "Group", "Assignee [id]", "Type", "Status", "Priority", "Tags"]).join(',')
 outfile << "\n"
 
 # outfile2 = File.open('./output/Ticket Comments.csv', "wb")
@@ -121,6 +121,7 @@ csv_filenames.each do |csv_filename|
           # go ahead and create user and plug in email address as name
           requester = User.find_or_create_by_key row["Requester"]
           requester.name = row["Requester"]
+          requester.save
         else
           # user already exist
           requester = User.find_or_create_by_key row["Requester"]
@@ -129,7 +130,7 @@ csv_filenames.each do |csv_filename|
     end
 
     # check to see if assignee field is defined or not
-    if row["Assignee"].nil?
+    if row["Assignee"].nil? || row["Assignee"].empty?
       #assignee field is nil
       if c.solved?
         # use default assignee
@@ -139,47 +140,36 @@ csv_filenames.each do |csv_filename|
         assignee = User.new nil
       end
     else
-      if row["Assignee"].empty?
-        #assignee field is empty.  check ticket status
-        if c.solved?
-          # use default assignee
-          assignee = User.default_agent
-        else
-          # ticket status is not closed, so just leave it blank
-          assignee = User.new nil
-        end
-      else
-        # assignee is defined (not nil, not empty).
-        # create if necessary
-        # recall: agent's key = name downcase
-        assignee = User.find_by_key row["Assignee"].downcase
-        if assignee.nil?
-          # assignee doesn't currently exist in database
-          # add to database with a dummy email
-          assignee = User.find_or_create_by_key row["Assignee"].downcase
-          fakeEmail = row["Assignee"].gsub ' ', '.'
-          fakeEmail = fakeEmail.gsub ':', '.'
-          assignee.email = fakeEmail + "@legacylimelightuser.com"
-          assignee.name = row["Assignee"]
-          assignee.act_as_agent row["Group"]
-        else
-          # assignee already exist in database
-          # add group name if necessary
-          assignee.act_as_agent row["Group"]
-        end
+      # assignee is defined (not nil, not empty).
+      # create if necessary
+      # recall: agent's key = name downcase
+      assignee = User.find_by_name row["Assignee"]
+      if assignee.nil?
+        # assignee doesn't currently exist in database
+        # add to database with a dummy email
+        fakeEmail = row["Assignee"].gsub ' ', '.'
+        fakeEmail = fakeEmail.gsub ':', '.'
+        fakeEmail = fakeEmail.gsub '..', '.'
+        fakeEmail = fakeEmail + "@legacylimelightuser.com"
+        assignee = User.new fakeEmail
+        assignee.name = row["Assignee"]
       end
-    end
 
-    # ticket group: if it's not specified, use "general"
-    if row["Group"].nil?
-      tGroup = "General"
-    else
-      if row["Group"].empty?
+      # ticket group: if it's not specified, use "general"
+      if row["Group"].nil?
         tGroup = "General"
       else
-        tGroup = row["Group"]
+        if row["Group"].empty?
+          tGroup = "General"
+        else
+          tGroup = row["Group"]
+        end
       end
+
+      assignee.act_as_agent tGroup
+      assignee.save
     end
+
 
 
 
