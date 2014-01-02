@@ -31,7 +31,7 @@ class Message
   # end
 
   def created_at
-    @creation_date.formatted_time
+    @creation_date.formatted_comment_time
   end
 
   # def case

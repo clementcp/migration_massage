@@ -25,10 +25,13 @@ csv_filenames.each do |csv_filename|
     # message = Message.new row[:case_id], row[:message_id], row[:message], row[:creation_date], row[:author], row[:public]
 
   CSV.foreach(csv_filename, :headers=>true) do |row|
-    message = Message.new count+1, row["Ticket #"], row["Public"], row["Creation Date"], row["Comment"]
+    message = Message.new count+1, row["Ticket #"], row["Public"], row["Creation Date [EN]"], row["Case Comments"]
     message.save
 
     # puts message.inspect
+
+    # only work on tickets where comment isn't empty
+    next if row["Case Comments"].nil? || row["Case Comments"].empty?
 
     # # check to see if author is 'customer' or 'null'
     # if (row[:author].downcase == "customer")
@@ -73,7 +76,7 @@ csv_filenames.each do |csv_filename|
       end
     end
 
-    if !row["Comment"].nil?
+    # if !row["Case Comments"].nil? || !row["Case Comments"].empty?
       # Write to output csv
       quoted = Array.new
       # [message.case_id, message.id, message.body, message.created_at, author.id, message.formatted_public].each do |element|
@@ -84,7 +87,7 @@ csv_filenames.each do |csv_filename|
       end
       outfile << quoted.join(',')
       outfile << "\n"
-    end
+    # end
 
 
     count += 1

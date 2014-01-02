@@ -50,6 +50,10 @@ class Case
     if @priority.downcase == 'medium'
       return 'normal'
     end
+
+    if @priority.downcase == 'urgent!'
+      return 'urgent'
+    end
     @priority.downcase
   end
 

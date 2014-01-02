@@ -2,8 +2,8 @@ require 'yaml'
 require 'set'
 
 class User
-  attr_reader :id, :groups_name, :type, :key, :name, :phone, :email
-  attr_writer :type, :email, :name, :type, :phone
+  attr_reader :id, :groups_name, :type, :key, :name, :phone, :email, :organization
+  attr_writer :type, :email, :name, :type, :phone, :organization
   def initialize key
     @key = key
     @type = 'end user'

@@ -46,7 +46,7 @@ csv_filenames.each do |csv_filename|
   count = 0
 
   CSV.foreach(csv_filename, :headers=>true) do |row|
-    c = Case.new row["Ticket #"], row["Subject"], row["Description"], row["Creation Date [EN]"], row["Closure Date"], row["Type"], row["Solved"], row["Priority"], row["Tags"]
+    c = Case.new row["Ticket #"], row["Subject"], row["Description"], row["Creation Date [EN]"], row["Closure Date [EN]"], row["Type"], row["Status"], row["Priority"], row["Tags"]
     c.save
 
     # user = User.find_or_create_by_key row[:requestor]
@@ -121,10 +121,13 @@ csv_filenames.each do |csv_filename|
           # go ahead and create user and plug in email address as name
           requester = User.find_or_create_by_key row["Requester"]
           requester.name = row["Requester"]
+          requester.organization = row["Account Name"]
           requester.save
         else
           # user already exist
           requester = User.find_or_create_by_key row["Requester"]
+          requester.organization = row["Account Name"]
+          requester.save
         end
       end
     end
