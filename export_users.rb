@@ -13,8 +13,11 @@ User.storage.each_pair do |key, user|
   # Skip if Twitter user
   # next if user.twitter?
 
+  temp_name = user.name
+  temp_name = user.email if temp_name.nil?
+
   quoted = Array.new
-  [user.id, user.name, user.email, '', '', user.type, user.organization, '', '', ''].each do |element|
+  [user.id, temp_name, user.email, '', '', user.type, user.organization, '', '', ''].each do |element|
     quoted << element.to_s.quote
   end
   outfile << quoted.join(',')

@@ -2,20 +2,23 @@ require 'yaml'
 require 'set'
 
 class User
-  attr_reader :id, :groups_name, :type, :key, :twitter, :name, :organization
-  attr_writer :type, :email, :name
+  attr_reader :id, :groups_name, :type, :key, :name, :phone, :email, :organization
+  attr_writer :type, :email, :name, :type, :phone, :organization
   def initialize key
     @key = key
     @type = 'end user'
     @groups_name = Set.new
-    @name = key
+    @required_agent = false
 
-    if twitter?
-      @twitter = key
-      @email = @twitter[1..-1]+"@generic-twitter-user.com"
-    else
-      @email = key
-    end
+
+    # if twitter?
+    #   @twitter = key
+    #   @email = @twitter[1..-1]+"@generic-twitter-user.com"
+    # else
+    #   @email = key
+    # end
+    @email = key
+
   end
 
   def save
@@ -23,6 +26,7 @@ class User
       @id = self.class.next_id
     end
     self.class.save_by_key self
+    self.class.update_index self
   end
 
   def act_as_agent group_name
@@ -43,9 +47,14 @@ class User
     @@storage ||= Hash.new
   end
 
+  def self.storage_by_name
+    @@storage_by_name ||= Hash.new
+  end
+
   def self.load_storage yaml='./user.yaml'
     user_file = File.open(yaml, 'r')
     @@storage = YAML.load user_file
+    self.index_by_name
   rescue
     # Ignore any exception which is likely to be non existed file
   end
@@ -54,6 +63,20 @@ class User
     serialized = YAML.dump User.storage
     user_file = File.open(yaml, 'wb')
     user_file.write(serialized)
+  end
+
+  def self.index_by_name
+    self.storage.each_pair do |key, user|
+      self.update_index user
+    end
+  end
+
+  def self.update_index user
+    self.storage_by_name[user.name] = user
+  end
+
+  def self.find_by_name name
+    self.storage_by_name[name]
   end
 
   def self.find_by_key key
@@ -78,25 +101,56 @@ class User
   end
 
   def self.default_agent
-    default_agent = self.find_or_create_by_key 'Zendesk_default_agent'
+    default_agent = self.find_or_create_by_key 'defaultagent@migrationtest-for-tripadvisor.com'
     default_agent.act_as_agent 'General'
     default_agent.name = "Default Agent"
-    default_agent.email = "defaultagent@test-for-tripadvisor.com"
+    default_agent.save
+    default_agent
+  end
+
+  def self.default_commenter
+    default_agent = self.find_or_create_by_key 'defaultcommenter@migrationtest-for-tripadvisor.com'
+    default_agent.act_as_agent 'General'
+    default_agent.name = "Default Commenter"
     default_agent.save
     default_agent
   end
 
   def self.default_user
-    default_user = self.find_or_create_by_key "Zendesk_default_enduser"
+    default_user = self.find_or_create_by_key "defaultenduser@migrationtest-for-tripadvisor.com"
     default_user.name = "Default User"
-    default_user.email  = "defaultenduser@test-for-tripadvisor.com"
     default_user.save
     default_user
   end
 
-  def email
-    @email.formatted_email
+  # def email
+  #   @email.formatted_email
+  # end
+
+  def type
+    case @type.downcase
+    when 'staff', 'half admin'
+      return 'agent'
+    when 'administrator'
+      return 'admin'
+    else
+      return @type.downcase
+    end
   end
+
+  # def self.find_by_name name
+  #   self.load_storage
+  #   self.storage.each do |key|
+  #     puts "aa debug : key = ", key
+  #     puts "aa debug2 : self.storage[key] = ", self.storage[key].to_s
+  #     # if storage[key].name == name
+  #     #   return key
+  #     # else
+  #     #   return false
+  #     # end
+  #   end
+  # end
+
 end
 
 class String

@@ -31,76 +31,38 @@ uniqueq = Hash.new
 
 
 CSV.foreach(csv_filename, :headers=>true) do |row|
-  c = Case.new row["Ticket#"], row["Subject"], row["DESCRIPTION"], row["Create Date"], row["Closure Date"], row["Requester"], row["Group"], row["Assignee"], row["Type"], row["Status"], row["Priority"], row["Tags"], row["queue"], row["Emailed To"], row["UserIP"], row["WEbagent"], row["ReferrerURL"], row["Webcookie"], row["ThreadId"]
+  c = Case.new row["Ticket#"], row["Subject"], row["DESCRIPTION"], row["Create Date"], row["Closure Date"], row["Type"], row["Status"], row["Priority"], row["Tags"], row["queue"], row["Emailed To"], row["UserIP"], row["WEbagent"], row["ReferrerURL"], row["Webcookie"], row["ThreadId"]
   c.save
-
-
-  # user = User.find_or_create_by_key row[:requestor]
-
-  # if row[:agent].downcase!="unassigned"
-  #   agent = User.find_or_create_by_key row[:agent]
-  #   agent.act_as_agent row[:group_name]
-  #   agent.save
-  # else
-  #   if c.closed?
-  #     agent = User.default_agent
-  #   else
-  #     agent = User.new nil # nil id, nil email
-  #   end
-  # end
-
-  # # add requester info into database if necessary (always overwrite with user email)
-  # requester_email = row["Client Email"]
-  # if requester_email.nil?
-  #   requester = User.default_user
-  # else
-  #   requester = User.find_or_create_by_key row["Client ID"]
-  #   requester.email = requester_email.formatted_email
-  #   requester.name = requester.email.formatted_name if requester.name.nil?
-  #   requester.organization = row["Location ID"]
-  # end
-
-  # # check to see if assignee is actually listed
-  # # if row["Assigned To"].downcase!=""
-  # if !row["Assigned To"].nil?
-  #   # check to see if assignee exist before adding it
-  #   assignee = User.find_by_key row["Assigned To"]
-  #   if assignee.nil?
-  #     # assignee doesn't currently exist in database
-  #     # add to database with a dummy email
-  #     assignee = User.find_or_create_by_key row["Assigned To"]
-  #     assignee.email = "unknown_assignee_"+row["Last Name Assigned To"]+"@muscogee.k12.ga.us"
-  #     assignee.name = assignee.email.formatted_name if assignee.name.nil?
-  #     assignee.organization = row["Location ID"]
-  #     assignee.act_as_agent c.group
-  #   else
-  #     # assignee already exist in database
-  #     # add group name if necessary
-  #     assignee.act_as_agent c.group
-  #   end
-  # else
-  #   # assignee not listed
-  #   # use default agent if ticket is closed
-  #   if c.closed?
-  #     assignee = User.default_agent
-  #   else
-  #     # ok to keep assigne blank if ticket is not closed
-  #     assignee = User.new nil # nil id, nil email
-  #   end
-  # end
 
   # trip advisor
   # check to see if requester field is defined or not
-  if row["Requester"].nil? | row["Requester"].empty?
+  if row["Requester"].nil? || row["Requester"].empty?
     #requester field not defined. use default user
     requester = User.default_user
   else
     # requester is defined.  let's create if necessary
-    requester = User.find_or_create_by_key row["Requester"]
+    # check to see if requester is email or name
+    if row["Requester"].include? "@"
+      # requester field contains email
+      requester = User.find_or_create_by_key row["Requester"].formatted_email
+      if requester.name.nil?
+        requester.name = row["Requester"]
+      end
+    else
+      # requester field doesn't contain email
+      requester = User.find_by_name row["Requester"]
+      # check to see if requester exists or not
+      if requester.nil?
+        # requester doesn't exist! make it up!
+        requester = User.new row["Requester"].format_name_into_email
+        requester.name = row["Requester"]
+      end
+    end
   end
+  requester.save
 
   # check to see if assignee field is defined or not
-  if row["Assignee"].nil? | row["Assignee"].empty?
+  if row["Assignee"].nil? || row["Assignee"].empty?
     #assignee field not defined. check to see if ticket status is closed or not
     if c.closed?
       # use default assignee
@@ -111,16 +73,32 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
     end
   else
     # assignee is defined.  create if necessary
-    assignee = User.find_or_create_by_key row["Assignee"]
-    assignee.act_as_agent row["Group"]
+    # check to see if assignee is email or name
+    if row["Assignee"].include? "@"
+      # assignee field contains email
+      assignee = User.find_or_create_by_key row["Assignee"].formatted_email
+      if assignee.name.nil?
+        assignee.name = row["Assignee"]
+      end
+    else
+      # assignee field doesn't contain email
+      assignee = User.find_by_name row["Assignee"]
+      if assignee.nil?
+        # assignee doesn't exist! make it up!
+        assignee = User.new row["Assignee"].format_name_into_email
+        assignee.name = row["Assignee"]
+      end
+    end
   end
+  assignee.act_as_agent row["Group"]
+  assignee.save
 
   # output on console for debugging
   # puts c.inspect
 
   # Write to output csv
   quoted = Array.new
-  [c.id, c.subject, c.description, c.create_date, c.closure_date, requester.id, c.group, assignee.id, c.type, c.status, c.priority, c.tags, c.queue, c.emailed_to, c.userip, c.webagent, c.referrerURL, c.webcookie, c.threadid].each do |element|
+  [c.id, c.subject, c.description, c.create_date, c.closure_date, requester.id, row["Group"], assignee.id, c.type, c.status, c.priority, c.tags, c.queue, c.emailed_to, c.userip, c.webagent, c.referrerURL, c.webcookie, c.threadid].each do |element|
     quoted << element.to_s.quote
   end
   outfile << quoted.join(',')

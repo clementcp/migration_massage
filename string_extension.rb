@@ -31,13 +31,18 @@ class String
     self.gsub '=', '-'
   end
 
-  def formatted_name
-    l_name, f_name, m_name = self.split('@').first.split('.')
-    if m_name.nil?
-      "#{f_name} #{l_name}"
-    else
-      "#{f_name} #{m_name} #{l_name}"
-    end
+  # def formatted_name
+  #   l_name, f_name, m_name = self.split('@').first.split('.')
+  #   if m_name.nil?
+  #     "#{f_name} #{l_name}"
+  #   else
+  #     "#{f_name} #{m_name} #{l_name}"
+  #   end
+  # end
+
+  def format_name_into_email
+    name = self.split (" ")
+    return name.join(".") + "@migrationtest-for-tripadvisor.com"
   end
 
   def formatted_queue

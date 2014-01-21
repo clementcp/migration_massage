@@ -24,24 +24,46 @@ csv_filenames.each do |csv_filename|
     # message = Message.new row[:case_id], row[:message_id], row[:message], row[:creation_date], row[:author], row[:public]
 
   CSV.foreach(csv_filename, :headers=>true) do |row|
-    message = Message.new row["Ticket#"], row["TicketComment"], row["Comment"], row["Creation Date"], row["Author"], row["Public"]
+    message = Message.new row["Ticket#"], row["TicketComment"], row["Comment"], row["Creation Date"], row["Public"]
     message.save
 
     # puts message.inspect
 
-    # # check to see if author is 'customer' or 'null'
-    # if (row[:author].downcase == "customer")
-    #   author = User.default_user
-    # elsif (row[:author].downcase == "null")
-    #   author = User.default_agent
-    # else
-    #   author = User.find_or_create_by_key row[:author]
+    # # check to see if author is defined
+    if row["Author"].nil? || row["Author"].empty?
+      # author is nil
+      author = User.default_commenter
+    else
+      # author is defined! look for it
+      # check to see if author is email or name
+      if row["Author"].include? "@"
+        # author field contains email
+        author = User.find_or_create_by_key row["Author"].formatted_email
+        if author.name.nil?
+          author.name = row["Author"]
+        end
+      else
+        # author field doesn't contain email
+        author = User.find_by_name row["Author"]
+        if author.nil?
+          # authur doesn't currently exist in database
+          # add to database with a dummy email
+          author = User.new row["Author"].format_name_into_email
+          author.name = row["Author"]
+          author.act_as_agent "General"
+        end
+      end
+    end
+    author.save
+
+    # if message.id == "23050"
+    #   puts message.inspect
     # end
 
     # Write to output csv
     quoted = Array.new
     # [message.case_id, message.id, message.body, message.created_at, author.id, message.formatted_public].each do |element|
-    [message.case_id, message.id, message.body, message.created_at, message.author, message.formatted_public].each do |element|
+    [message.case_id, message.id, message.body, message.created_at, author.id, message.formatted_public].each do |element|
       quoted << element.to_s.quote
     end
     outfile << quoted.join(',')

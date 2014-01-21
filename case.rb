@@ -5,15 +5,15 @@ class Case
   extend Storage
 
   attr_reader :id, :subject, :group, :type, :status, :priority, :tags, :emailed_to, :userip, :webagent, :referrerURL, :webcookie, :threadid
-  def initialize id, subject, description, create_date, closure_date, requester, group, assignee, type, status, priority, tags, queue, emailed_to, userip, webagent, referrerURL, webcookie, threadid
+  def initialize id, subject, description, create_date, closure_date, type, status, priority, tags, queue, emailed_to, userip, webagent, referrerURL, webcookie, threadid
     @id = id
     @subject = subject
     @description = description
     @create_date = create_date
     @closure_date = closure_date
-    @requester = requester
-    @group = group
-    @assignee = assignee
+    # @requester = requester
+    # @group = group
+    # @assignee = assignee
     @type = type
     @status = status
     @priority = priority
