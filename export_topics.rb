@@ -15,7 +15,7 @@ if csv_filenames.last.to_i.to_s==csv_filenames.last
 end
 
 outfile = File.open('./output/topics.csv', "wb")
-outfile << (["Topic #", "Title", "firstpostid", "Body", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Submitter", "Public", "Highlighted", "Forum"].join(', '))
+outfile << (["Topic #", "Title", "Body", "Creation Date [yyyy-MM-dd HH:mm:ss z]", "Submitter", "Public", "Highlighted", "Locked", "Forum"].join(', '))
 outfile << "\n"
 
 # User.load_storage
@@ -90,7 +90,7 @@ csv_filenames.each do |csv_filename|
       # [message.case_id, message.id, message.body, message.created_at, author.id, 'true'].each do |element|
 
 
-      [row["Topic #"], row["Title"], row["firstpostid"], row["Body"], t, row["Submitter"], row["Public"], row["Highlighted"], row["Forum"]].each do |element|
+      [row["Topic #"], row["Title"], row["Body"], t, row["Submitter"], row["Public"], row["Highlighted"], "no", row["Forum"]].each do |element|
         quoted << element.to_s.quote
       end
       outfile << quoted.join(',')
