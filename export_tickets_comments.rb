@@ -29,6 +29,9 @@ csv_filenames.each do |csv_filename|
 
     # puts message.inspect
 
+    # only work on tickets where comment isn't empty
+    next if row["Comment"].nil? || row["Comment"].empty?
+
     # # check to see if author is defined
     if row["Author"].nil? || row["Author"].empty?
       # author is nil
