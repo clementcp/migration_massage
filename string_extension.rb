@@ -20,6 +20,12 @@ class String
     Time.strptime(self,"%m/%d/%Y %H:%M %p").strftime("%Y-%m-%d %T GMT-08:00")
   end
 
+  def formatted_time2
+    return '' if self.nil?
+    Time.strptime(self,"%m/%d/%y %H:%M").strftime("%Y-%m-%d %T GMT-08:00")
+  end
+
+
   def formatted_comment_time
     return '' if self.nil?
     # Time.parse(self).strftime("%m/%d/%Y %T")
@@ -28,7 +34,8 @@ class String
     # Time.strptime(self,"%m/%d/%Y %H:%M:%S %p").strftime("%Y-%m-%d %T GMT-05:00")
     # Time.strptime(self,"%m/%d/%y %H:%M").strftime("%Y-%m-%d %T GMT-05:00")
     # Time.strptime(self,"%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %T GMT-05:00")
-    Time.strptime(self,"%m/%d/%Y %H:%M").strftime("%Y-%m-%d %T GMT-08:00")
+    # Time.strptime(self,"%m/%d/%Y %H:%M %p").strftime("%Y-%m-%d %T GMT-08:00")
+    Time.strptime(self,"%m/%d/%y %H:%M").strftime("%Y-%m-%d %T GMT-08:00")
   end
 
   # def formatted_time_comment

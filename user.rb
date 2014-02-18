@@ -109,7 +109,7 @@ class User
   end
 
   def self.default_commenter
-    default_agent = self.find_or_create_by_key 'defaultcommenter@migrationtest-for-limelight.com'
+    default_agent = self.find_or_create_by_key 'defaultcommenter@legacylimelightuser.com'
     default_agent.act_as_agent 'General'
     default_agent.name = "Default Commenter"
     default_agent.save
@@ -117,11 +117,21 @@ class User
   end
 
   def self.default_user
-    default_user = self.find_or_create_by_key "defaultenduser@migrationtest-for-limelight.com"
+    default_user = self.find_or_create_by_key "defaultenduser@legacylimelightuser.com"
     default_user.name = "Default User"
     default_user.save
     default_user
   end
+
+  def self.legacy_agent
+    legacy_agent = self.find_or_create_by_key 'LegacyAgent@legacylimelightuser.com'
+    legacy_agent.name = 'Legacy Agent'
+    legacy_agent.act_as_agent 'General'
+    legacy_agent.save
+    legacy_agent
+  end
+
+
 
   # def email
   #   @email.formatted_email

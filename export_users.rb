@@ -13,6 +13,10 @@ User.storage.each_pair do |key, user|
   # Skip if Twitter user
   # next if user.twitter?
 
+  # limelight new
+  # skip all users unless for legacy agent
+  # next if user.type == 'agent' && user.name != 'Legacy Agent'
+
   quoted = Array.new
   [user.id, user.name, user.email, '', user.phone, user.type, user.organization, '', '', ''].each do |element|
     quoted << element.to_s.quote

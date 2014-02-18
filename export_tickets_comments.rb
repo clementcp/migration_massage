@@ -25,7 +25,7 @@ csv_filenames.each do |csv_filename|
     # message = Message.new row[:case_id], row[:message_id], row[:message], row[:creation_date], row[:author], row[:public]
 
   CSV.foreach(csv_filename, :headers=>true) do |row|
-    message = Message.new count+1, row["Ticket #"], row["Public"], row["Creation Date [EN]"], row["Case Comments"]
+    message = Message.new count+8001, row["Ticket #"], row["Public"], row["Creation Date [EN]"], row["Case Comments"]
     message.save
 
     # puts message.inspect
@@ -57,22 +57,57 @@ csv_filenames.each do |csv_filename|
 
     # limelight
     # check to see if author is defined
-    if row["Author"].nil? || row["Author"].empty?
-      # author is nil
-      author = User.default_commenter
+    # if row["Author"].nil? || row["Author"].empty?
+    #   # author is nil
+    #   author = User.default_commenter
+    # else
+    #   # author is defined! look for it
+    #   author = User.find_by_name row["Author"]
+    #   if author.nil?
+    #     # authur doesn't currently exist in database
+    #     # add to database with a dummy email
+    #     fakeEmail = row["Author"].gsub ' ', '.'
+    #     fakeEmail = fakeEmail.gsub ':', '.'
+    #     fakeEmail = fakeEmail + "@legacylimelightuser.com"
+    #     author = User.new fakeEmail
+    #     author.name = row["Author"]
+    #     author.act_as_agent "General"
+    #     author.save
+    #   end
+    # end
+
+    # limelight new
+    # use legacy agent whenever the author is an agent
+    # first off: check to see if message is public or private
+    # since only agent can make private comments
+    if !message.public?
+      author = User.legacy_agent
     else
-      # author is defined! look for it
-      author = User.find_by_name row["Author"]
-      if author.nil?
-        # authur doesn't currently exist in database
-        # add to database with a dummy email
-        fakeEmail = row["Author"].gsub ' ', '.'
-        fakeEmail = fakeEmail.gsub ':', '.'
-        fakeEmail = fakeEmail + "@legacylimelightuser.com"
-        author = User.new fakeEmail
-        author.name = row["Author"]
-        author.act_as_agent "General"
-        author.save
+      # message is public. go on to proceed with checks
+      if row["Author"].nil? || row["Author"].empty?
+        # author is nil
+        author = User.legacy_agent
+      else
+        # author is defined! look for it
+        author = User.find_by_name row["Author"]
+        if author.nil?
+          # authur doesn't currently exist in database
+          # add as end user to database with a dummy email
+          fakeEmail = row["Author"].gsub ' ', '.'
+          fakeEmail = fakeEmail.gsub ':', '.'
+          fakeEmail = fakeEmail + "@legacylimelightuser.com"
+          author = User.new fakeEmail
+          author.name = row["Author"]
+          author.save
+        else
+          # author already exist in database
+          # check to see if author is agent or end user
+          # if author is an agent, then use legacy agent instead
+          # otherwise, leave it as end user
+          if author.type == 'agent'
+            author = User.legacy_agent
+          end
+        end
       end
     end
 

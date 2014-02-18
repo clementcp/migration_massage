@@ -4,7 +4,7 @@ require './storage.rb'
 class Case
   extend Storage
 
-  attr_reader :id, :subject, :priority, :tags
+  attr_reader :id, :subject, :priority
   def initialize id, subject, description, creation_date, closure_date, type, status, priority, tags
     @id = id
     @subject = subject
@@ -25,20 +25,23 @@ class Case
     @status.downcase
   end
 
-  # def closed?
-  #   @status.downcase == 'closed'
-  # end
+  def closed?
+    @status.downcase == 'closed'
+  end
 
   def solved?
     @status.downcase == 'solved'
   end
 
   def created_date
-    @creation_date.formatted_time
+    # @creation_date.formatted_time
+    @creation_date.formatted_time2
   end
 
   def closure_date
-    return @closure_date.formatted_time if self.solved?
+    # return @closure_date.formatted_time if self.solved?
+    # return @closure_date.formatted_time if self.closed?
+    return @closure_date.formatted_time2 if self.closed?
     ''
   end
 
@@ -63,6 +66,10 @@ class Case
     else
       return @description
     end
+  end
+
+  def tags
+    return @tags + ' legacy_tickets_2014_02_14'
   end
 
 end

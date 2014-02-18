@@ -135,27 +135,27 @@ csv_filenames.each do |csv_filename|
     # check to see if assignee field is defined or not
     if row["Assignee"].nil? || row["Assignee"].empty?
       #assignee field is nil
-      if c.solved?
-        # use default assignee
-        assignee = User.default_agent
-      else
-        # ticket status is not closed, so just leave it blank
-        assignee = User.new nil
-      end
+      # if c.solved?
+      #   # use default assignee
+      #   assignee = User.default_agent
+      # else
+      #   # ticket status is not closed, so just leave it blank
+      #   assignee = User.new nil
+      # end
     else
       # assignee is defined (not nil, not empty).
       # create if necessary
       # recall: agent's key = name downcase
-      assignee = User.find_by_name row["Assignee"]
-      if assignee.nil?
-        # assignee doesn't currently exist in database
+      agent = User.find_by_name row["Assignee"]
+      if agent.nil?
+        # agent doesn't currently exist in database
         # add to database with a dummy email
         fakeEmail = row["Assignee"].gsub ' ', '.'
         fakeEmail = fakeEmail.gsub ':', '.'
         fakeEmail = fakeEmail.gsub '..', '.'
         fakeEmail = fakeEmail + "@legacylimelightuser.com"
-        assignee = User.new fakeEmail
-        assignee.name = row["Assignee"]
+        agent = User.new fakeEmail
+        agent.name = row["Assignee"]
       end
 
       # ticket group: if it's not specified, use "general"
@@ -169,11 +169,17 @@ csv_filenames.each do |csv_filename|
         end
       end
 
-      assignee.act_as_agent tGroup
-      assignee.save
+      agent.act_as_agent tGroup
+      agent.save
     end
 
-
+    # as requested by limelight 2014_02_12
+    # set all assignees to legacy agent
+    assignee = User.legacy_agent
+    if !row["Group"].nil? || !row["Group"].empty?
+      assignee.act_as_agent row["Group"]
+    end
+    assignee.save
 
 
     # # now check to see if AR owner is part of required agents
@@ -206,7 +212,7 @@ csv_filenames.each do |csv_filename|
 
     # Write to output csv
     quoted = Array.new
-    [c.id, c.subject, c.description, c.created_date, c.closure_date, requester.id, tGroup, assignee.id, c.type, c.status, c.priority, c.tags].each do |element|
+    [c.id, c.subject, c.description, c.created_date, c.closure_date, requester.id, row['Group'], assignee.id, c.type, c.status, c.priority, c.tags].each do |element|
       quoted << element.to_s.quote
     end
     outfile << quoted.join(',')

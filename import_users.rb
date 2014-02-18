@@ -31,7 +31,7 @@ CSV.foreach(csv_filename, :headers=>true) do |row|
   # for limelight
 
   email = row["email"]
-  if email.nil?
+  if email.nil? || email.empty?
     # create a fake email address
     email = row["Name"].gsub ' ', '.'
     email = email + "@legacylimelightuser.com"
